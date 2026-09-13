@@ -936,15 +936,22 @@ const state = {
    a real, persistent, per-traveler database. Find both in your
    Supabase project: Settings → API.
    ============================================================ */
-const SUPABASE_URL = 'YOUR_SUPABASE_URL';        // e.g. 'https://abcdefgh.supabase.co'
-const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+const SUPABASE_URL = 'https://ogxsffwiydwaduxazvzh.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_LnckRHxIUkQv4NCWqyY7iQ_i3OLY7ow';
 
-const dbEnabled = SUPABASE_URL.startsWith('http') && SUPABASE_ANON_KEY.length > 20;
-const sb = dbEnabled ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+const dbEnabled = SUPABASE_URL.startsWith('http') && SUPABASE_ANON_KEY.length > 20 && !!window.supabase;
+let sb = null;
+if (dbEnabled) {
+  try {
+    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  } catch (e) {
+    console.error('Supabase failed to initialize, falling back to demo mode:', e);
+  }
+}
 let currentUser = null;
 
 /* ============ AUTH ============ */
-if (dbEnabled) {
+if (sb) {
   document.getElementById('auth-block').style.display = 'block';
   document.getElementById('guest-block').style.display = 'none';
 
@@ -1008,7 +1015,7 @@ async function sendMagicLink(){
 }
 
 async function signOut(){
-  if (dbEnabled) await sb.auth.signOut();
+  if (sb) await sb.auth.signOut();
   currentUser = null;
   state.journeys = [];
   goTo('view-cover');
@@ -1025,7 +1032,7 @@ async function enterApp(){
 
 /* ============ DATA LAYER (Supabase when configured, in-memory otherwise) ============ */
 async function loadJourneysFromDb(){
-  if (!dbEnabled || !currentUser) return;
+  if (!sb || !currentUser) return;
   const { data, error } = await sb
     .from('journeys')
     .select('*, journey_photos(storage_path)')
@@ -1040,7 +1047,7 @@ function rowToJourney(row){
     ? new Date(row.travel_date + 'T00:00:00').toLocaleDateString('en-US', { month:'long', year:'numeric' })
     : '';
   let photo = null;
-  if (row.journey_photos && row.journey_photos.length && dbEnabled) {
+  if (row.journey_photos && row.journey_photos.length && sb) {
     const path = row.journey_photos[0].storage_path;
     photo = sb.storage.from('journey-photos').getPublicUrl(path).data.publicUrl;
   }
@@ -1059,7 +1066,7 @@ function rowToJourney(row){
 }
 
 async function persistJourney(journey){
-  if (!dbEnabled || !currentUser) return null;
+  if (!sb || !currentUser) return null;
   const { data, error } = await sb.from('journeys').insert({
     traveler_id: currentUser.id,
     origin: journey.origin, destination: journey.destination,
@@ -1321,7 +1328,7 @@ async function saveJourneyAndReturn(){
       photo: state.draft.photo
     };
 
-    if (dbEnabled && currentUser) {
+    if (sb && currentUser) {
       const saveBtn = document.querySelector('.card-actions .btn-solid');
       if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Saving…'; }
       await persistJourney(journey);
