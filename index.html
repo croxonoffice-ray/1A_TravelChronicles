@@ -1,0 +1,1340 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>1A Travel Collection</title>
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0B1526">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="1A Travel">
+<meta name="mobile-web-app-capable" content="yes">
+
+<!-- Supabase client (only used if configured below) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+/* ============ TOKENS ============ */
+:root{
+  --navy:        #14233F;
+  --navy-deep:   #0B1526;
+  --navy-line:   rgba(255,255,255,0.09);
+  --ivory:       #F7F2E7;
+  --ivory-dim:   #EFE7D4;
+  --paper-line:  rgba(20,35,63,0.14);
+  --gold:        #B8935A;
+  --gold-bright: #D3B27C;
+  --gold-dim:    rgba(184,147,90,0.35);
+  --ink:         #241E17;
+  --ink-soft:    #5B5346;
+  --leather:     #5B4130;
+  --radius:      2px;
+  --shadow-card: 0 18px 40px -20px rgba(11,21,38,0.55);
+  --ease: cubic-bezier(.22,.61,.36,1);
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--navy-deep);
+  color:var(--ink);
+  font-family:'Jost', sans-serif;
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+  overflow-x:hidden;
+  padding-top:env(safe-area-inset-top);
+  padding-bottom:env(safe-area-inset-bottom);
+}
+h1,h2,h3,h4{font-family:'Cormorant', serif; margin:0; font-weight:600; color:var(--navy);}
+p{margin:0;}
+button{font-family:inherit; cursor:pointer;}
+input,select,textarea{font-family:inherit;}
+a{color:inherit;}
+
+::selection{ background: var(--gold-dim); }
+
+:focus-visible{
+  outline:2px solid var(--gold);
+  outline-offset:3px;
+}
+
+@media (prefers-reduced-motion: reduce){
+  *{ animation-duration:0.01ms !important; transition-duration:0.01ms !important; }
+}
+
+/* subtle linen grain used across ivory surfaces */
+.grain{
+  position:relative;
+}
+.grain::before{
+  content:"";
+  position:absolute; inset:0;
+  pointer-events:none;
+  opacity:0.035;
+  background-image:
+    repeating-linear-gradient(0deg, #000 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg, #000 0 1px, transparent 1px 3px);
+}
+
+/* ============ APP SHELL ============ */
+#app{
+  max-width:1180px;
+  margin:0 auto;
+  min-height:100vh;
+  background:var(--ivory);
+  position:relative;
+}
+
+.view{ display:none; }
+.view.active{ display:block; animation:viewIn .5s var(--ease); }
+@keyframes viewIn{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+
+/* ============ COVER / SIGN-IN ============ */
+#view-cover{
+  min-height:100vh;
+  background:
+    radial-gradient(1100px 600px at 50% -10%, rgba(184,147,90,0.10), transparent 60%),
+    var(--navy-deep);
+  padding:32px;
+}
+#view-cover.active{ display:flex; align-items:center; justify-content:center; }
+.cover-panel{
+  width:100%; max-width:460px;
+  text-align:center;
+  color:var(--ivory);
+}
+.seal{
+  width:76px; height:76px;
+  margin:0 auto 28px;
+  border:1px solid var(--gold);
+  border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  position:relative;
+}
+.seal::before{
+  content:"";
+  position:absolute; inset:6px;
+  border:1px solid var(--gold-dim);
+  border-radius:50%;
+}
+.seal svg{ width:30px; height:30px; }
+.cover-panel .brand{
+  font-family:'Cormorant', serif;
+  font-size:14px;
+  letter-spacing:0.16em;
+  color:var(--gold-bright);
+  margin-bottom:10px;
+}
+.cover-panel h1{
+  color:var(--ivory);
+  font-size:44px;
+  font-weight:500;
+  line-height:1.15;
+  margin-bottom:14px;
+}
+.cover-panel h1 em{ font-style:italic; color:var(--gold-bright); }
+.cover-panel .sub{
+  font-size:15px;
+  line-height:1.7;
+  color:rgba(247,242,231,0.62);
+  max-width:360px;
+  margin:0 auto 36px;
+}
+.cover-field{
+  text-align:left;
+  margin-bottom:22px;
+}
+.cover-field label{
+  display:block;
+  font-size:11px;
+  letter-spacing:0.14em;
+  color:rgba(247,242,231,0.5);
+  margin-bottom:8px;
+}
+.cover-field input{
+  width:100%;
+  background:transparent;
+  border:none;
+  border-bottom:1px solid rgba(247,242,231,0.28);
+  color:var(--ivory);
+  font-size:18px;
+  font-family:'Cormorant', serif;
+  padding:6px 2px 10px;
+  transition:border-color .25s var(--ease);
+}
+.cover-field input:focus{ border-bottom-color:var(--gold); outline:none; }
+.cover-field input::placeholder{ color:rgba(247,242,231,0.28); }
+
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:10px;
+  font-family:'Jost', sans-serif;
+  font-size:13px;
+  letter-spacing:0.08em;
+  padding:14px 30px;
+  border:1px solid var(--gold);
+  background:transparent;
+  color:var(--gold-bright);
+  border-radius:var(--radius);
+  transition:background .25s var(--ease), color .25s var(--ease);
+}
+.btn:hover{ background:var(--gold); color:var(--navy-deep); }
+.btn-solid{
+  background:var(--navy); color:var(--ivory); border:1px solid var(--navy);
+}
+.btn-solid:hover{ background:var(--gold); border-color:var(--gold); color:var(--navy-deep); }
+.btn-full{ width:100%; }
+.btn-ghost{
+  border-color:transparent; color:var(--ink-soft);
+}
+.btn-ghost:hover{ background:transparent; color:var(--navy); text-decoration:underline; text-decoration-color:var(--gold-dim); }
+
+/* ============ HEADER (home / app views) ============ */
+.app-header{
+  background:var(--navy);
+  color:var(--ivory);
+  padding:26px 40px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  border-bottom:3px solid var(--gold);
+}
+.app-header .mark{
+  display:flex; align-items:center; gap:14px;
+}
+.app-header .mark svg{ width:26px; height:26px; }
+.app-header .masthead{
+  font-family:'Cormorant', serif;
+  font-size:12px;
+  letter-spacing:0.13em;
+  white-space:nowrap;
+  color:var(--gold-bright);
+  font-weight:600;
+}
+.app-header h2{
+  color:var(--ivory);
+  font-size:15px;
+  font-weight:500;
+  letter-spacing:0.02em;
+}
+.app-header .year{
+  font-family:'Cormorant', serif;
+  font-size:13px;
+  color:rgba(247,242,231,0.55);
+  margin-top:2px;
+}
+.header-actions{ display:flex; align-items:center; gap:18px; }
+.icon-btn{
+  background:none; border:none; color:var(--ivory); opacity:0.75;
+  display:flex; align-items:center; justify-content:center;
+  transition:opacity .2s var(--ease);
+}
+.icon-btn:hover{ opacity:1; }
+.icon-btn svg{ width:20px; height:20px; }
+
+/* ============ HOME ============ */
+.home-inner{ padding:44px 40px 80px; }
+
+.stat-strip{
+  display:grid;
+  grid-template-columns:repeat(5, 1fr);
+  border-top:1px solid var(--paper-line);
+  border-bottom:1px solid var(--paper-line);
+  padding:28px 0;
+  margin-bottom:56px;
+}
+.stat{
+  text-align:center;
+  padding:0 12px;
+  border-right:1px solid var(--paper-line);
+}
+.stat:last-child{ border-right:none; }
+.stat svg{ width:20px; height:20px; color:var(--gold); margin-bottom:12px; }
+.stat .num{
+  font-family:'Cormorant', serif;
+  font-size:30px;
+  color:var(--navy);
+  font-weight:600;
+  line-height:1;
+}
+.stat .label{
+  font-size:11px;
+  letter-spacing:0.06em;
+  color:var(--ink-soft);
+  margin-top:8px;
+}
+
+.section-title{
+  display:flex; align-items:baseline; justify-content:space-between;
+  margin-bottom:24px;
+}
+.section-title h3{ font-size:22px; color:var(--navy); font-weight:600; }
+.section-title .count{ font-size:12px; color:var(--ink-soft); letter-spacing:0.04em; }
+
+.journeys{ display:flex; flex-direction:column; gap:16px; margin-bottom:16px;}
+
+.journey-row{
+  display:grid;
+  grid-template-columns:64px 1.4fr 1fr 1fr auto;
+  align-items:center;
+  gap:20px;
+  padding:20px 22px;
+  background:#fff;
+  border:1px solid var(--paper-line);
+  border-left:3px solid var(--gold);
+  position:relative;
+  cursor:pointer;
+  transition:border-color .2s var(--ease), transform .2s var(--ease);
+}
+.journey-row:hover{ border-color:var(--gold-dim); border-left-color:var(--gold); transform:translateX(2px); }
+.journey-row::after{
+  /* perforation notch, like a torn ticket stub */
+  content:"";
+  position:absolute; left:64px; top:0; bottom:0;
+  width:1px;
+  background-image:linear-gradient(var(--paper-line) 50%, transparent 0%);
+  background-size:1px 8px;
+}
+.jr-flag{
+  width:44px; height:44px;
+  border:1px solid var(--gold-dim);
+  border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Cormorant', serif;
+  color:var(--gold);
+  font-weight:600;
+  font-size:15px;
+}
+.jr-main .city{ font-family:'Cormorant', serif; font-size:22px; color:var(--navy); font-weight:600; }
+.jr-main .route{ font-size:12px; color:var(--ink-soft); letter-spacing:0.05em; margin-top:2px; }
+.jr-airline .name{ font-size:13px; color:var(--ink); }
+.jr-airline .cabin{ font-size:11px; color:var(--gold); letter-spacing:0.06em; margin-top:3px; }
+.jr-date{ font-size:12px; color:var(--ink-soft); text-align:left; }
+.jr-arrow{ color:var(--gold); }
+.jr-arrow svg{ width:16px; height:16px; }
+
+.new-journey-cta{
+  margin-top:12px;
+  display:flex; justify-content:center;
+}
+
+/* ============ FORM VIEWS ============ */
+.form-shell{
+  padding:0 40px 100px;
+  max-width:720px;
+  margin:0 auto;
+}
+.form-head{
+  padding:48px 0 30px;
+  text-align:center;
+}
+.form-head .eyebrow{
+  font-family:'Cormorant', serif;
+  font-size:12px;
+  letter-spacing:0.3em;
+  color:var(--gold);
+  margin-bottom:10px;
+}
+.form-head h2{ font-size:34px; color:var(--navy); }
+.form-head p{ font-size:14px; color:var(--ink-soft); margin-top:10px; }
+
+.stepper{
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  margin-bottom:6px;
+}
+.step-dot{
+  width:6px; height:6px; border-radius:50%;
+  background:var(--paper-line);
+  transition:background .3s var(--ease), transform .3s var(--ease);
+}
+.step-dot.active{ background:var(--gold); transform:scale(1.4); }
+
+.field-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:26px 28px;
+  margin-bottom:8px;
+}
+.field-grid .span-2{ grid-column:1 / -1; }
+
+.field label{
+  display:block;
+  font-size:11px;
+  letter-spacing:0.08em;
+  color:var(--ink-soft);
+  margin-bottom:9px;
+}
+.field input[type=text],
+.field input[type=date],
+.field input[type=number],
+.field select,
+.field textarea{
+  width:100%;
+  border:none;
+  border-bottom:1px solid var(--paper-line);
+  background:transparent;
+  padding:8px 2px 12px;
+  font-size:17px;
+  font-family:'Cormorant', serif;
+  color:var(--navy);
+  transition:border-color .2s var(--ease);
+}
+.field select{ appearance:none; -webkit-appearance:none; background-image:none; cursor:pointer; }
+.field input:focus, .field select:focus, .field textarea:focus{
+  outline:none; border-bottom-color:var(--gold);
+}
+.field textarea{ resize:vertical; min-height:70px; font-size:16px; line-height:1.6; }
+
+.select-wrap{ position:relative; }
+.select-wrap::after{
+  content:"";
+  position:absolute; right:2px; bottom:16px;
+  width:7px; height:7px;
+  border-right:1px solid var(--ink-soft);
+  border-bottom:1px solid var(--ink-soft);
+  transform:rotate(45deg);
+  pointer-events:none;
+}
+
+.pair-inline{ display:grid; grid-template-columns:1fr 1fr; gap:28px; }
+
+.rating-field{ margin-bottom:6px; }
+.stars{ display:flex; gap:6px; margin-top:2px; }
+.star-btn{
+  background:none; border:none; padding:2px;
+  color:var(--paper-line);
+  transition:color .15s var(--ease), transform .15s var(--ease);
+}
+.star-btn svg{ width:22px; height:22px; }
+.star-btn.filled{ color:var(--gold); }
+.star-btn:hover{ transform:scale(1.12); }
+
+.tone-select{ display:flex; gap:10px; margin-top:4px; }
+.tone-opt{
+  flex:1;
+  text-align:center;
+  padding:10px 6px;
+  border:1px solid var(--paper-line);
+  font-size:12px;
+  color:var(--ink-soft);
+  letter-spacing:0.03em;
+  transition:all .2s var(--ease);
+}
+.tone-opt.selected{ border-color:var(--gold); color:var(--navy); background:rgba(184,147,90,0.08); }
+
+.photo-well{
+  border:1px dashed var(--paper-line);
+  padding:26px;
+  text-align:center;
+  cursor:pointer;
+  transition:border-color .2s var(--ease);
+  position:relative;
+  overflow:hidden;
+}
+.photo-well:hover{ border-color:var(--gold-dim); }
+.photo-well svg{ width:22px; height:22px; color:var(--gold); margin-bottom:10px; }
+.photo-well .hint{ font-size:12px; color:var(--ink-soft); }
+.photo-well img{
+  position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+}
+.photo-well input{ display:none; }
+
+.form-actions{
+  display:flex; justify-content:space-between; align-items:center;
+  margin-top:44px;
+  padding-top:24px;
+  border-top:1px solid var(--paper-line);
+}
+
+/* ============ TRAVEL CARD ============ */
+.card-view-wrap{
+  min-height:100vh;
+  background:
+    radial-gradient(900px 500px at 50% 0%, rgba(184,147,90,0.08), transparent 60%),
+    var(--navy-deep);
+  display:flex; align-items:center; justify-content:center;
+  padding:60px 24px;
+}
+.card-column{ width:100%; max-width:520px; text-align:center; }
+.card-preface{
+  color:var(--gold-bright);
+  font-family:'Cormorant', serif;
+  font-size:13px;
+  letter-spacing:0.3em;
+  margin-bottom:26px;
+}
+
+.travel-card{
+  background:var(--ivory);
+  position:relative;
+  padding:0;
+  text-align:left;
+  box-shadow:var(--shadow-card);
+  opacity:0;
+  transform:scale(.94) translateY(10px);
+}
+.travel-card.stamped{
+  animation:cardIn .7s var(--ease) forwards;
+}
+@keyframes cardIn{
+  0%{ opacity:0; transform:scale(.94) translateY(10px); }
+  60%{ opacity:1; transform:scale(1.015) translateY(0); }
+  100%{ opacity:1; transform:scale(1) translateY(0); }
+}
+
+.tc-top{
+  padding:34px 34px 26px;
+  border-bottom:1px dashed var(--paper-line);
+  position:relative;
+}
+.tc-dest{
+  font-family:'Cormorant', serif;
+  font-size:38px;
+  font-weight:600;
+  color:var(--navy);
+  letter-spacing:0.01em;
+}
+.tc-route{
+  font-size:13px;
+  color:var(--ink-soft);
+  letter-spacing:0.05em;
+  margin-top:6px;
+}
+.tc-flight{
+  display:flex; justify-content:space-between; align-items:flex-end;
+  margin-top:20px;
+}
+.tc-flight .airline{ font-size:14px; color:var(--navy); }
+.tc-flight .flightno{ color:var(--gold); font-size:13px; margin-top:2px; }
+.tc-cabin{
+  font-family:'Cormorant', serif;
+  font-style:italic;
+  font-size:15px;
+  color:var(--ink-soft);
+  text-align:right;
+}
+.tc-cabin .month{ display:block; font-size:11px; font-style:normal; letter-spacing:0.06em; color:var(--ink-soft); margin-top:4px; }
+
+/* the notches that make it read as a ticket */
+.tc-top::before, .tc-top::after{
+  content:"";
+  position:absolute; bottom:-9px;
+  width:18px; height:18px; border-radius:50%;
+  background:var(--navy-deep);
+}
+.tc-top::before{ left:-9px; }
+.tc-top::after{ right:-9px; }
+
+.tc-body{ padding:28px 34px 34px; display:flex; gap:28px; align-items:flex-start; }
+
+.tc-stamp{
+  flex-shrink:0;
+  width:96px; height:96px;
+  border-radius:50%;
+  border:1.5px solid var(--gold);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  color:var(--gold);
+  transform:rotate(-8deg);
+  position:relative;
+}
+.tc-stamp::before{
+  content:"";
+  position:absolute; inset:6px;
+  border:1px solid var(--gold-dim);
+  border-radius:50%;
+}
+.tc-stamp .score{ font-family:'Cormorant', serif; font-size:28px; font-weight:700; line-height:1; }
+.tc-stamp .of{ font-size:9px; letter-spacing:0.1em; margin-top:2px; }
+
+.tc-ratings{ flex:1; }
+.tc-rating-row{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:7px 0;
+  border-bottom:1px solid var(--paper-line);
+  font-size:12px;
+}
+.tc-rating-row:last-child{ border-bottom:none; }
+.tc-rating-row .lbl{ color:var(--ink-soft); letter-spacing:0.03em; }
+.tc-rating-row .val{ display:flex; gap:3px; }
+.tc-rating-row .val svg{ width:12px; height:12px; color:var(--gold); }
+.tc-rating-row .val svg.empty{ color:var(--paper-line); }
+
+.tc-meta{
+  padding:0 34px 22px;
+  display:flex; gap:22px;
+  font-size:11.5px;
+  color:var(--ink-soft);
+}
+.tc-meta span b{ color:var(--navy); font-weight:500; }
+
+.tc-cost{
+  margin:0 34px 24px;
+  padding:14px 18px;
+  background:var(--navy);
+  color:var(--ivory);
+  display:flex; justify-content:space-between; align-items:center;
+}
+.tc-cost .points{ font-family:'Cormorant', serif; font-size:17px; }
+.tc-cost .taxes{ font-size:12px; color:var(--gold-bright); }
+
+.tc-notes{
+  margin:0 34px 34px;
+  font-family:'Cormorant', serif;
+  font-style:italic;
+  font-size:16px;
+  line-height:1.6;
+  color:var(--ink);
+  border-left:2px solid var(--gold-dim);
+  padding-left:16px;
+}
+
+.tc-photo{
+  height:150px;
+  margin:0 34px 30px;
+  position:relative;
+  overflow:hidden;
+  border:1px solid var(--paper-line);
+}
+.tc-photo img{ width:100%; height:100%; object-fit:cover; display:block; }
+.tc-photo.placeholder{
+  background:linear-gradient(135deg, #1b2c4a, #0e1a30);
+  display:flex; align-items:center; justify-content:center;
+}
+.tc-photo.placeholder svg{ width:34px; height:34px; color:rgba(211,178,124,0.5); }
+
+.card-actions{
+  display:flex; gap:14px; justify-content:center; margin-top:34px;
+}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width: 760px){
+  .app-header{ padding:20px 22px; }
+  .home-inner{ padding:30px 20px 60px; }
+  .stat-strip{ grid-template-columns:repeat(3,1fr); row-gap:24px; }
+  .stat{ border-right:1px solid var(--paper-line); }
+  .stat:nth-child(3n){ border-right:none; }
+  .journey-row{ grid-template-columns:48px 1fr; grid-template-areas:"flag main" "flag airline" "flag date"; row-gap:6px; }
+  .journey-row .jr-arrow{ display:none; }
+  .journey-row::after{ left:48px; }
+  .form-shell{ padding:0 20px 80px; }
+  .field-grid{ grid-template-columns:1fr; }
+  .pair-inline{ grid-template-columns:1fr; }
+  .tc-body{ flex-direction:column; align-items:center; text-align:center; }
+  .tc-ratings{ width:100%; }
+}
+
+@media (max-width: 430px){
+  .app-header{ padding:16px; gap:10px; }
+  .app-header .masthead{ font-size:10px; letter-spacing:0.09em; }
+  .app-header h2{ font-size:13px; }
+  .app-header .mark{ gap:10px; min-width:0; }
+  .app-header .mark svg{ width:22px; height:22px; flex-shrink:0; }
+  .header-actions{ gap:10px; flex-shrink:0; }
+  .header-actions .year{ display:none; }
+  .header-actions .btn{ padding:10px 14px; font-size:12px; white-space:nowrap; }
+}
+
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ============ COVER ============ -->
+  <section id="view-cover" class="view active">
+    <div class="cover-panel">
+      <div class="seal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M12 2v20M2 12h20M4.5 4.5l15 15M19.5 4.5l-15 15" stroke="#B8935A"/></svg>
+      </div>
+      <div class="brand">1A TRAVEL COLLECTION</div>
+      <h1>A private record of every journey you've taken.</h1>
+      <p class="sub">Not just where you went, but how it felt to get there — every flight, every cabin, every glass of champagne.</p>
+
+      <!-- Shown when a Supabase project is configured -->
+      <div id="auth-block" style="display:none;">
+        <div class="cover-field">
+          <label>Your email</label>
+          <input id="input-email" type="email" placeholder="you@example.com" autocomplete="email" />
+        </div>
+        <button class="btn btn-full" id="btn-send-link" onclick="sendMagicLink()">Email me a sign-in link</button>
+        <p id="auth-status" style="margin-top:16px; font-size:13px; color:rgba(247,242,231,0.55); display:none;"></p>
+      </div>
+
+      <!-- Shown when no Supabase project is configured yet (local/demo mode) -->
+      <div id="guest-block">
+        <div class="cover-field">
+          <label>Your name</label>
+          <input id="input-name" type="text" placeholder="e.g. Eleanor Whitfield" />
+        </div>
+        <button class="btn btn-full" onclick="beginJournal()">Open my travel log</button>
+        <div style="margin-top:18px;">
+          <button class="btn btn-ghost" style="color:rgba(247,242,231,0.45)" onclick="beginJournal()">Continue as guest</button>
+        </div>
+        <p style="margin-top:22px; font-size:12px; color:rgba(247,242,231,0.35); line-height:1.6;">
+          Running in demo mode — entries won't be saved. Connect a Supabase project (see supabase-schema.sql) to enable real accounts and persistent storage.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ HOME ============ -->
+
+  <section id="view-home" class="view">
+    <header class="app-header">
+      <div class="mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#D3B27C" stroke-width="1"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18M6 6l12 12M18 6L6 18"/></svg>
+        <div>
+          <div class="masthead">1A TRAVEL COLLECTION</div>
+          <h2 id="home-greeting">My Travel Log</h2>
+        </div>
+      </div>
+      <div class="header-actions">
+        <span class="year">2026</span>
+        <button class="icon-btn" id="btn-signout" onclick="signOut()" title="Sign out" style="display:none;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M15 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9M10 12h11M17 8l4 4-4 4"/></svg>
+        </button>
+        <button class="btn" onclick="goTo('view-trip-basics')">+ New journey</button>
+      </div>
+    </header>
+
+    <div class="home-inner">
+      <div class="stat-strip">
+        <div class="stat">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 4 6 4 9s-1.5 6.3-4 9c-2.5-2.7-4-6-4-9s1.5-6.3 4-9z"/></svg>
+          <div class="num" id="stat-journeys">12</div>
+          <div class="label">Journeys</div>
+        </div>
+        <div class="stat">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M2 16l7-1 4.5-8 2 .5-2 7.5 6-1 2 1.5-7 3-3 4-1.5-.5.5-3.5-6 1.5-.5-2z"/></svg>
+          <div class="num">42,816</div>
+          <div class="label">Miles flown</div>
+        </div>
+        <div class="stat">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M6 10h12M8 10c0 5 8 5 8 0M5 10h14l-1 3H6zM9 20h6"/></svg>
+          <div class="num">8</div>
+          <div class="label">Lounges visited</div>
+        </div>
+        <div class="stat">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M4 18c0-6 2-11 8-11s8 5 8 11" /><path d="M2 18h20"/></svg>
+          <div class="num">6</div>
+          <div class="label">Business class</div>
+        </div>
+        <div class="stat">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M12 3l2.6 5.7 6.2.6-4.7 4.2 1.4 6.1L12 16.6 6.5 19.6l1.4-6.1L3.2 9.3l6.2-.6z"/></svg>
+          <div class="num">4.6</div>
+          <div class="label">Average rating</div>
+        </div>
+      </div>
+
+      <div class="section-title">
+        <h3>Recent Journeys</h3>
+        <span class="count"><span id="journey-count">2</span> recorded this year</span>
+      </div>
+
+      <div class="journeys" id="journey-list"></div>
+
+      <div class="new-journey-cta">
+        <button class="btn btn-ghost" onclick="goTo('view-trip-basics')">Record another journey →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ STEP 1: ROUTE ============ -->
+  <section id="view-trip-basics" class="view">
+    <header class="app-header">
+      <div class="mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#D3B27C" stroke-width="1"><circle cx="12" cy="12" r="9"/></svg>
+        <div><div class="masthead">1A TRAVEL COLLECTION</div></div>
+      </div>
+      <button class="icon-btn" onclick="goTo('view-home')" title="Cancel">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </header>
+    <div class="form-shell">
+      <div class="form-head">
+        <div class="stepper"><span class="step-dot active"></span><span class="step-dot"></span></div>
+        <div class="eyebrow">Departure Card</div>
+        <h2>Where did this journey take you?</h2>
+        <p>Begin with the route — the details come next.</p>
+      </div>
+
+      <div class="field-grid">
+        <div class="field"><label>Departure city</label><input type="text" id="f-origin" placeholder="Sydney" /></div>
+        <div class="field"><label>Arrival city</label><input type="text" id="f-destination" placeholder="Singapore" /></div>
+        <div class="field span-2"><label>Date of travel</label><input type="date" id="f-date" /></div>
+      </div>
+
+      <div class="form-actions">
+        <span></span>
+        <button class="btn btn-solid" id="btn-continue-step1" onclick="goTo('view-journey-form')">Continue →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ STEP 2: FULL DETAILS ============ -->
+  <section id="view-journey-form" class="view">
+    <header class="app-header">
+      <div class="mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#D3B27C" stroke-width="1"><circle cx="12" cy="12" r="9"/></svg>
+        <div><div class="masthead">1A TRAVEL COLLECTION</div></div>
+      </div>
+      <button class="icon-btn" onclick="goTo('view-home')" title="Cancel">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </header>
+    <div class="form-shell">
+      <div class="form-head">
+        <div class="stepper"><span class="step-dot"></span><span class="step-dot active"></span></div>
+        <div class="eyebrow">The Details</div>
+        <h2>Tell the story of the flight</h2>
+        <p>The particulars worth remembering, in your own words.</p>
+      </div>
+
+      <div class="field-grid">
+        <div class="field"><label>Airline</label><input type="text" id="f-airline" placeholder="Qantas" /></div>
+        <div class="field"><label>Flight number</label><input type="text" id="f-flightno" placeholder="QF5" /></div>
+
+        <div class="field select-wrap">
+          <label>Cabin</label>
+          <select id="f-cabin">
+            <option>First</option>
+            <option selected>Business</option>
+            <option>Premium Economy</option>
+            <option>Economy</option>
+          </select>
+        </div>
+        <div class="field"><label>Seat</label><input type="text" id="f-seat" placeholder="3A" /></div>
+
+        <div class="field"><label>Aircraft</label><input type="text" id="f-aircraft" placeholder="A380-800" /></div>
+        <div class="field select-wrap">
+          <label>Ticket type</label>
+          <select id="f-tickettype">
+            <option>Points redemption</option>
+            <option>Cash fare</option>
+            <option>Upgrade</option>
+            <option>Companion fare</option>
+          </select>
+        </div>
+
+        <div class="field"><label>Points used</label><input type="text" id="f-points" placeholder="12,450" /></div>
+        <div class="field"><label>Cash paid (taxes/fees)</label><input type="text" id="f-cash" placeholder="$87" /></div>
+
+        <div class="field"><label>Lounge visited</label><input type="text" id="f-lounge" placeholder="Qantas First Lounge, SYD" /></div>
+        <div class="field"><label>Meal</label><input type="text" id="f-meal" placeholder="Beef fillet, NV Champagne" /></div>
+
+        <div class="field span-2">
+          <label>Sleep quality</label>
+          <div class="tone-select" id="f-sleep-group">
+            <div class="tone-opt" data-val="Restless">Restless</div>
+            <div class="tone-opt selected" data-val="Good">Good</div>
+            <div class="tone-opt" data-val="Excellent">Excellent</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Service</label>
+          <div class="stars" data-group="service"></div>
+        </div>
+        <div class="field">
+          <label>Seat comfort</label>
+          <div class="stars" data-group="seat"></div>
+        </div>
+        <div class="field">
+          <label>Dining</label>
+          <div class="stars" data-group="dining"></div>
+        </div>
+        <div class="field"></div>
+
+        <div class="field span-2">
+          <label>Notes</label>
+          <textarea id="f-notes" placeholder="Excellent sleep. Champagne service outstanding..."></textarea>
+        </div>
+
+        <div class="field span-2">
+          <label>Photograph</label>
+          <label class="photo-well" id="photo-well">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="5" width="18" height="14" rx="1"/><circle cx="9" cy="10" r="1.6"/><path d="M21 17l-6-5-4 3.5-3-2L3 17"/></svg>
+            <div class="hint">Add a photograph from this journey</div>
+            <input type="file" id="f-photo" accept="image/*" />
+          </label>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-ghost" onclick="goTo('view-trip-basics')">← Back</button>
+        <button class="btn btn-solid" onclick="createTravelCard()">Create Travel Card</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CARD REVEAL ============ -->
+  <section id="view-card-reveal" class="view">
+    <div class="card-view-wrap">
+      <div class="card-column">
+        <div class="card-preface">YOUR JOURNEY, RECORDED</div>
+        <div class="travel-card" id="travel-card"></div>
+        <div class="card-actions">
+          <button class="btn btn-ghost" style="color:var(--gold-bright)" onclick="goTo('view-journey-form')">Edit details</button>
+          <button class="btn btn-solid" onclick="saveJourneyAndReturn()">Save to travel log</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* ============ STATE ============ */
+const state = {
+  journeys: [
+    {
+      city:"SINGAPORE", origin:"Sydney", destination:"Singapore",
+      airline:"Qantas", flightno:"QF5", cabin:"Business",
+      month:"December 2026", date:"2026-12-05",
+      service:5, seat:4, dining:4, sleep:"Excellent",
+      points:"12,450", cash:"$87", lounge:"Qantas First Lounge, SYD",
+      meal:"Beef fillet, NV Champagne",
+      notes:"Excellent sleep. Champagne service outstanding — the crew remembered my name from check-in through to landing.",
+      photo:null
+    },
+    {
+      city:"LONDON", origin:"Singapore", destination:"London",
+      airline:"Singapore Airlines", flightno:"SQ322", cabin:"Business",
+      month:"December 2026", date:"2026-12-08",
+      service:5, seat:5, dining:4, sleep:"Good",
+      points:"—", cash:"$2,140", lounge:"SilverKris Lounge, SIN",
+      meal:"Lobster thermidor",
+      notes:"The suite doors make a real difference on a twelve-hour sector. Would fly again without hesitation.",
+      photo:null
+    }
+  ],
+  draft:{ service:0, seat:0, dining:0, sleep:"Good", photo:null }
+};
+
+/* ============================================================
+   SUPABASE CONFIGURATION
+   Paste your project's values below to switch from demo mode to
+   a real, persistent, per-traveler database. Find both in your
+   Supabase project: Settings → API.
+   ============================================================ */
+const SUPABASE_URL = 'https://ogxsffwiydwaduxazvzh.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_LnckRHxIUkQv4NCWqyY7iQ_i3OLY7ow';
+
+const dbEnabled = SUPABASE_URL.startsWith('http') && SUPABASE_ANON_KEY.length > 20;
+const sb = dbEnabled ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+let currentUser = null;
+
+/* ============ AUTH ============ */
+if (dbEnabled) {
+  document.getElementById('auth-block').style.display = 'block';
+  document.getElementById('guest-block').style.display = 'none';
+
+  sb.auth.onAuthStateChange((event, session) => {
+    if (session && session.user) {
+      currentUser = session.user;
+      enterApp();https://ogxsffwiydwaduxazvzh.supabase.co
+    }
+  });
+
+  // Handle the redirect back from the magic-link email.
+  sb.auth.getSession().then(({ data }) => {
+    if (data.session && data.session.user) {
+      currentUser = data.session.user;
+      enterApp();
+    }
+  });
+}
+
+async function sendMagicLink(){
+  const email = document.getElementById('input-email').value.trim();
+  const status = document.getElementById('auth-status');
+  if (!email || !email.includes('@')) {
+    status.style.display = 'block';
+    status.style.color = '#D3746B';
+    status.textContent = 'Enter a valid email address.';
+    return;
+  }
+  const btn = document.getElementById('btn-send-link');
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+  const { error } = await sb.auth.signInWithOtp({
+    email,
+    options: { emailRedirectTo: window.location.href }
+  });
+  btn.disabled = false;
+  btn.textContent = 'Email me a sign-in link';
+  status.style.display = 'block';
+  if (error) {
+    status.style.color = '#D3746B';
+    status.textContent = error.message;
+  } else {
+    status.style.color = 'rgba(247,242,231,0.7)';
+    status.textContent = `Check ${email} for a sign-in link.`;
+  }
+}
+
+async function signOut(){
+  if (dbEnabled) await sb.auth.signOut();
+  currentUser = null;
+  state.journeys = [];
+  goTo('view-cover');
+}
+
+async function enterApp(){
+  const label = currentUser && currentUser.email ? currentUser.email.split('@')[0] : 'My';
+  document.getElementById('home-greeting').textContent = `${cap(label)}'s Travel Log`;
+  document.getElementById('btn-signout').style.display = 'flex';
+  await loadJourneysFromDb();
+  renderJourneyList();
+  goTo('view-home');
+}
+
+/* ============ DATA LAYER (Supabase when configured, in-memory otherwise) ============ */
+async function loadJourneysFromDb(){
+  if (!dbEnabled || !currentUser) return;
+  const { data, error } = await sb
+    .from('journeys')
+    .select('*, journey_photos(storage_path)')
+    .eq('traveler_id', currentUser.id)
+    .order('created_at', { ascending: false });
+  if (error) { console.error(error); return; }
+  state.journeys = data.map(rowToJourney);
+}
+
+function rowToJourney(row){
+  const month = row.travel_date
+    ? new Date(row.travel_date + 'T00:00:00').toLocaleDateString('en-US', { month:'long', year:'numeric' })
+    : '';
+  let photo = null;
+  if (row.journey_photos && row.journey_photos.length && dbEnabled) {
+    const path = row.journey_photos[0].storage_path;
+    photo = sb.storage.from('journey-photos').getPublicUrl(path).data.publicUrl;
+  }
+  return {
+    id: row.id,
+    city: row.destination.toUpperCase(),
+    origin: row.origin, destination: row.destination,
+    airline: row.airline, flightno: row.flight_number, cabin: row.cabin,
+    month, date: row.travel_date,
+    service: row.service_rating, seat: row.seat_rating, dining: row.dining_rating,
+    sleep: row.sleep_quality,
+    points: row.points_used || '—', cash: row.cash_paid || '—',
+    lounge: row.lounge, meal: row.meal, notes: row.notes,
+    photo
+  };
+}
+
+async function persistJourney(journey){
+  if (!dbEnabled || !currentUser) return null;
+  const { data, error } = await sb.from('journeys').insert({
+    traveler_id: currentUser.id,
+    origin: journey.origin, destination: journey.destination,
+    airline: journey.airline, flight_number: journey.flightno,
+    aircraft: document.getElementById('f-aircraft').value || null,
+    cabin: journey.cabin, seat: document.getElementById('f-seat').value || null,
+    travel_date: journey.date || null,
+    ticket_type: document.getElementById('f-tickettype').value || null,
+    points_used: journey.points, cash_paid: journey.cash,
+    lounge: journey.lounge, meal: journey.meal, sleep_quality: journey.sleep,
+    service_rating: journey.service, seat_rating: journey.seat, dining_rating: journey.dining,
+    notes: journey.notes
+  }).select().single();
+
+  if (error) { console.error(error); alert('Could not save journey: ' + error.message); return null; }
+
+  if (journey.photo) {
+    await uploadJourneyPhoto(data.id, journey.photo);
+  }
+  return data.id;
+}
+
+async function uploadJourneyPhoto(journeyId, dataUrl){
+  const blob = await (await fetch(dataUrl)).blob();
+  const path = `${currentUser.id}/${journeyId}.jpg`;
+  const { error: upErr } = await sb.storage.from('journey-photos').upload(path, blob, { upsert:true, contentType: blob.type });
+  if (upErr) { console.error(upErr); return; }
+  await sb.from('journey_photos').insert({ journey_id: journeyId, storage_path: path });
+}
+
+/* ============ NAVIGATION ============ */
+function goTo(id){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({top:0, behavior:'auto'});
+}
+
+function beginJournal(){
+  const name = document.getElementById('input-name').value.trim();
+  document.getElementById('home-greeting').textContent = name ? `${name.split(' ')[0]}'s Travel Log` : 'My Travel Log';
+  renderJourneyList();
+  goTo('view-home');
+}
+
+/* ============ STAR WIDGETS ============ */
+const starSvg = (filled)=>`<svg viewBox="0 0 24 24" fill="${filled?'currentColor':'none'}" stroke="currentColor" stroke-width="1"><path d="M12 3l2.6 5.7 6.2.6-4.7 4.2 1.4 6.1L12 16.6 6.5 19.6l1.4-6.1L3.2 9.3l6.2-.6z"/></svg>`;
+
+function buildStarInput(container, group){
+  container.innerHTML = '';
+  for(let i=1;i<=5;i++){
+    const b = document.createElement('button');
+    b.type='button'; b.className='star-btn'; b.dataset.val=i;
+    b.innerHTML = starSvg(false);
+    b.addEventListener('click', ()=>{
+      state.draft[group] = i;
+      paintStars(container, i);
+    });
+    container.appendChild(b);
+  }
+}
+function paintStars(container, val){
+  [...container.children].forEach((b,idx)=>{
+    const filled = idx < val;
+    b.classList.toggle('filled', filled);
+    b.innerHTML = starSvg(filled);
+  });
+}
+document.querySelectorAll('.stars').forEach(el=>{
+  const group = el.dataset.group;
+  buildStarInput(el, group);
+  paintStars(el, 4);
+  state.draft[group] = 4;
+});
+
+/* sleep tone selector */
+document.querySelectorAll('#f-sleep-group .tone-opt').forEach(opt=>{
+  opt.addEventListener('click', ()=>{
+    document.querySelectorAll('#f-sleep-group .tone-opt').forEach(o=>o.classList.remove('selected'));
+    opt.classList.add('selected');
+    state.draft.sleep = opt.dataset.val;
+  });
+});
+
+/* photo preview */
+document.getElementById('f-photo').addEventListener('change', (e)=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev)=>{
+    state.draft.photo = ev.target.result;
+    const well = document.getElementById('photo-well');
+    well.querySelector('.hint').style.display='none';
+    well.querySelector('svg').style.display='none';
+    const img = document.createElement('img');
+    img.src = ev.target.result;
+    well.appendChild(img);
+  };
+  reader.readAsDataURL(file);
+});
+
+/* ============ JOURNEY LIST RENDER ============ */
+function renderJourneyList(){
+  const wrap = document.getElementById('journey-list');
+  wrap.innerHTML = '';
+  state.journeys.forEach((j, idx)=>{
+    const row = document.createElement('div');
+    row.className = 'journey-row';
+    row.onclick = ()=> viewSavedCard(idx);
+    row.innerHTML = `
+      <div class="jr-flag">${j.city.slice(0,2)}</div>
+      <div class="jr-main">
+        <div class="city">${cap(j.city)}</div>
+        <div class="route">${abbr(j.origin)} → ${abbr(j.destination)}</div>
+      </div>
+      <div class="jr-airline">
+        <div class="name">${j.airline}</div>
+        <div class="cabin">${j.cabin}</div>
+      </div>
+      <div class="jr-date">${j.month}</div>
+      <div class="jr-arrow">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M9 6l6 6-6 6"/></svg>
+      </div>
+    `;
+    wrap.appendChild(row);
+  });
+  document.getElementById('journey-count').textContent = state.journeys.length;
+}
+function cap(s){ return s.charAt(0)+s.slice(1).toLowerCase(); }
+function abbr(city){
+  const map = {Sydney:'SYD', Singapore:'SIN', London:'LHR', Tokyo:'HND', Auckland:'AKL', Melbourne:'MEL', "Hong Kong":'HKG', Paris:'CDG', "New York":'JFK', Dubai:'DXB'};
+  return map[city] || city.slice(0,3).toUpperCase();
+}
+
+/* ============ CARD CREATION ============ */
+let viewingSaved = null;
+
+function createTravelCard(){
+  const origin = document.getElementById('f-origin').value || 'Sydney';
+  const destination = document.getElementById('f-destination').value || 'Singapore';
+  const date = document.getElementById('f-date').value;
+  const month = date ? new Date(date+'T00:00:00').toLocaleDateString('en-US',{month:'long', year:'numeric'}) : 'December 2026';
+
+  const journey = {
+    city: destination.toUpperCase(),
+    origin, destination,
+    airline: document.getElementById('f-airline').value || 'Qantas',
+    flightno: document.getElementById('f-flightno').value || 'QF5',
+    cabin: document.getElementById('f-cabin').value,
+    month, date,
+    service: state.draft.service || 4,
+    seat: state.draft.seat || 4,
+    dining: state.draft.dining || 4,
+    sleep: state.draft.sleep,
+    points: document.getElementById('f-points').value || '—',
+    cash: document.getElementById('f-cash').value || '—',
+    lounge: document.getElementById('f-lounge').value,
+    meal: document.getElementById('f-meal').value,
+    notes: document.getElementById('f-notes').value || 'A quiet, unremarkable flight — which, at altitude, is its own kind of luxury.',
+    photo: state.draft.photo
+  };
+
+  viewingSaved = null;
+  renderCard(journey, true);
+  goTo('view-card-reveal');
+}
+
+function viewSavedCard(idx){
+  viewingSaved = idx;
+  renderCard(state.journeys[idx], false);
+  goTo('view-card-reveal');
+}
+
+function stampScore(j){
+  const avg = (j.service + j.seat + j.dining) / 3;
+  return avg.toFixed(1);
+}
+
+function starsHtml(val){
+  let out = '';
+  for(let i=1;i<=5;i++){
+    out += `<svg class="${i<=val?'':'empty'}" viewBox="0 0 24 24" fill="${i<=val?'currentColor':'none'}" stroke="currentColor" stroke-width="1"><path d="M12 3l2.6 5.7 6.2.6-4.7 4.2 1.4 6.1L12 16.6 6.5 19.6l1.4-6.1L3.2 9.3l6.2-.6z"/></svg>`;
+  }
+  return out;
+}
+
+function renderCard(j, animate){
+  const el = document.getElementById('travel-card');
+  el.classList.remove('stamped');
+
+  const photoBlock = j.photo
+    ? `<div class="tc-photo"><img src="${j.photo}" alt=""/></div>`
+    : `<div class="tc-photo placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="5" width="18" height="14" rx="1"/><circle cx="9" cy="10" r="1.6"/><path d="M21 17l-6-5-4 3.5-3-2L3 17"/></svg></div>`;
+
+  el.innerHTML = `
+    <div class="tc-top">
+      <div class="tc-dest">${cap(j.city)}</div>
+      <div class="tc-route">${j.origin} → ${j.destination}</div>
+      <div class="tc-flight">
+        <div>
+          <div class="airline">${j.airline} ${j.flightno}</div>
+          <div class="flightno">${j.cabin} Class</div>
+        </div>
+        <div class="tc-cabin">${j.cabin}<span class="month">${j.month}</span></div>
+      </div>
+    </div>
+    <div class="tc-body">
+      <div class="tc-stamp"><div class="score">${stampScore(j)}</div><div class="of">OUT OF 5</div></div>
+      <div class="tc-ratings">
+        <div class="tc-rating-row"><span class="lbl">Service</span><span class="val">${starsHtml(j.service)}</span></div>
+        <div class="tc-rating-row"><span class="lbl">Seat</span><span class="val">${starsHtml(j.seat)}</span></div>
+        <div class="tc-rating-row"><span class="lbl">Dining</span><span class="val">${starsHtml(j.dining)}</span></div>
+      </div>
+    </div>
+    <div class="tc-meta">
+      ${j.lounge ? `<span>Lounge — <b>${j.lounge}</b></span>` : ''}
+      <span>Sleep — <b>${j.sleep}</b></span>
+    </div>
+    <div class="tc-cost">
+      <div class="points">${j.points !== '—' ? j.points + ' points' : 'Cash fare'}</div>
+      <div class="taxes">${j.cash !== '—' ? j.cash + ' taxes & fees' : ''}</div>
+    </div>
+    ${j.notes ? `<div class="tc-notes">"${j.notes}"</div>` : ''}
+    ${photoBlock}
+  `;
+
+  if(animate){
+    requestAnimationFrame(()=>{
+      requestAnimationFrame(()=> el.classList.add('stamped'));
+    });
+  } else {
+    el.style.opacity = 1;
+    el.style.transform = 'none';
+  }
+}
+
+async function saveJourneyAndReturn(){
+  if(viewingSaved === null){
+    const origin = document.getElementById('f-origin').value || 'Sydney';
+    const destination = document.getElementById('f-destination').value || 'Singapore';
+    const date = document.getElementById('f-date').value;
+    const month = date ? new Date(date+'T00:00:00').toLocaleDateString('en-US',{month:'long', year:'numeric'}) : 'December 2026';
+
+    const journey = {
+      city: destination.toUpperCase(),
+      origin, destination,
+      airline: document.getElementById('f-airline').value || 'Qantas',
+      flightno: document.getElementById('f-flightno').value || 'QF5',
+      cabin: document.getElementById('f-cabin').value,
+      month, date,
+      service: state.draft.service || 4,
+      seat: state.draft.seat || 4,
+      dining: state.draft.dining || 4,
+      sleep: state.draft.sleep,
+      points: document.getElementById('f-points').value || '—',
+      cash: document.getElementById('f-cash').value || '—',
+      lounge: document.getElementById('f-lounge').value,
+      meal: document.getElementById('f-meal').value,
+      notes: document.getElementById('f-notes').value,
+      photo: state.draft.photo
+    };
+
+    if (dbEnabled && currentUser) {
+      const saveBtn = document.querySelector('.card-actions .btn-solid');
+      if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Saving…'; }
+      await persistJourney(journey);
+      await loadJourneysFromDb();
+      if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Save to travel log'; }
+    } else {
+      state.journeys.unshift(journey);
+    }
+    resetForm();
+  }
+  renderJourneyList();
+  goTo('view-home');
+}
+
+function resetForm(){
+  ['f-origin','f-destination','f-date','f-airline','f-flightno','f-seat','f-aircraft','f-points','f-cash','f-lounge','f-meal','f-notes'].forEach(id=>{
+    document.getElementById(id).value = '';
+  });
+  state.draft = { service:4, seat:4, dining:4, sleep:'Good', photo:null };
+  document.querySelectorAll('.stars').forEach(el=> paintStars(el, 4));
+  document.querySelectorAll('#f-sleep-group .tone-opt').forEach(o=>o.classList.remove('selected'));
+  document.querySelector('#f-sleep-group .tone-opt[data-val="Good"]').classList.add('selected');
+  const well = document.getElementById('photo-well');
+  const img = well.querySelector('img');
+  if(img) img.remove();
+  well.querySelector('.hint').style.display='block';
+  well.querySelector('svg').style.display='block';
+}
+
+/* init */
+renderJourneyList();
+
+/* PWA: register service worker (only works when served over http/https, not file://) */
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
+
+</script>
+</body>
+</html>
