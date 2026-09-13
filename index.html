@@ -666,6 +666,17 @@ a{color:inherit;}
         </div>
         <button class="btn btn-full" id="btn-send-link" onclick="sendMagicLink()">Email me a sign-in link</button>
         <p id="auth-status" style="margin-top:16px; font-size:13px; color:rgba(247,242,231,0.55); display:none;"></p>
+
+        <div style="display:flex; align-items:center; gap:14px; margin:24px 0;">
+          <span style="flex:1; height:1px; background:rgba(247,242,231,0.15);"></span>
+          <span style="font-size:11px; letter-spacing:0.08em; color:rgba(247,242,231,0.4);">OR</span>
+          <span style="flex:1; height:1px; background:rgba(247,242,231,0.15);"></span>
+        </div>
+
+        <button class="btn btn-full" onclick="signInWithGoogle()" style="display:flex; align-items:center; justify-content:center; gap:10px;">
+          <svg width="16" height="16" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.9 2.4 30.4 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.3 13.1 17.6 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.5 3-2.2 5.5-4.7 7.2l7.3 5.7C43.9 37.3 46.5 31.4 46.5 24.5z"/><path fill="#FBBC05" d="M10.5 19.3c-.5 1.5-.8 3-.8 4.7s.3 3.2.8 4.7l-7.9 6.1C1 31.2 0 27.8 0 24s1-7.2 2.6-10.8l7.9 6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.3-5.7c-2.1 1.4-4.9 2.3-8.6 2.3-6.4 0-11.7-3.6-13.6-8.8l-7.9 6.1C6.5 42.6 14.6 48 24 48z"/></svg>
+          Continue with Google
+        </button>
       </div>
 
       <!-- Shown when no Supabase project is configured yet (local/demo mode) -->
@@ -925,8 +936,8 @@ const state = {
    a real, persistent, per-traveler database. Find both in your
    Supabase project: Settings → API.
    ============================================================ */
-const SUPABASE_URL = 'https://ogxsffwiydwaduxazvzh.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_LnckRHxIUkQv4NCWqyY7iQ_i3OLY7ow';
+const SUPABASE_URL = 'YOUR_SUPABASE_URL';        // e.g. 'https://abcdefgh.supabase.co'
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
 
 const dbEnabled = SUPABASE_URL.startsWith('http') && SUPABASE_ANON_KEY.length > 20;
 const sb = dbEnabled ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
@@ -951,6 +962,21 @@ if (dbEnabled) {
       enterApp();
     }
   });
+}
+
+async function signInWithGoogle(){
+  const { error } = await sb.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: window.location.href }
+  });
+  if (error) {
+    const status = document.getElementById('auth-status');
+    status.style.display = 'block';
+    status.style.color = '#D3746B';
+    status.textContent = error.message;
+  }
+  // On success, the browser navigates away to Google automatically —
+  // there's nothing else to do here.
 }
 
 async function sendMagicLink(){
