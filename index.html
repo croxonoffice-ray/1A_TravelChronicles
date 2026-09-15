@@ -232,6 +232,37 @@ a{color:inherit;}
   margin-top:2px;
 }
 .header-actions{ display:flex; align-items:center; gap:18px; }
+
+/* ============ TAB BAR ============ */
+.tab-bar{
+  background:var(--ivory);
+  border-bottom:1px solid var(--paper-line);
+}
+.tab-bar-inner{
+  max-width:1180px;
+  margin:0 auto;
+  padding:0 40px;
+  display:flex;
+  gap:32px;
+  overflow-x:auto;
+}
+.tab-link{
+  padding:16px 2px;
+  font-family:'Jost', sans-serif;
+  font-size:13px;
+  letter-spacing:0.04em;
+  color:var(--ink-soft);
+  text-decoration:none;
+  white-space:nowrap;
+  border-bottom:2px solid transparent;
+  transition:color .2s var(--ease), border-color .2s var(--ease);
+}
+.tab-link:hover{ color:var(--navy); }
+.tab-link.active{
+  color:var(--navy);
+  border-bottom-color:var(--gold);
+  font-weight:500;
+}
 .icon-btn{
   background:none; border:none; color:var(--ivory); opacity:0.75;
   display:flex; align-items:center; justify-content:center;
@@ -617,6 +648,7 @@ a{color:inherit;}
 /* ============ RESPONSIVE ============ */
 @media (max-width: 760px){
   .app-header{ padding:20px 22px; }
+  .tab-bar-inner{ padding:0 20px; gap:22px; }
   .home-inner{ padding:30px 20px 60px; }
   .stat-strip{ grid-template-columns:repeat(3,1fr); row-gap:24px; }
   .stat{ border-right:1px solid var(--paper-line); }
@@ -716,6 +748,15 @@ a{color:inherit;}
       </div>
     </header>
 
+    <nav class="tab-bar" aria-label="Main">
+      <div class="tab-bar-inner">
+        <a href="#" class="tab-link active" onclick="return false;">Home</a>
+        <a href="#" class="tab-link" onclick="goTo('view-journeys'); return false;">Journeys</a>
+        <a href="#" class="tab-link" onclick="goTo('view-companions'); return false;">Companions</a>
+        <a href="#" class="tab-link" onclick="goTo('view-about'); return false;">About</a>
+      </div>
+    </nav>
+
     <div class="home-inner">
       <div class="stat-strip">
         <div class="stat">
@@ -753,8 +794,145 @@ a{color:inherit;}
       <div class="journeys" id="journey-list"></div>
 
       <div class="new-journey-cta">
+        <button class="btn btn-ghost" onclick="goTo('view-journeys')">View all journeys →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ JOURNEYS (full archive) ============ -->
+  <section id="view-journeys" class="view">
+    <header class="app-header">
+      <div class="mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#D3B27C" stroke-width="1"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18M6 6l12 12M18 6L6 18"/></svg>
+        <div>
+          <div class="masthead">1A TRAVEL COLLECTION</div>
+          <h2 class="greeting-echo">My Travel Log</h2>
+        </div>
+      </div>
+      <div class="header-actions">
+        <span class="year">2026</span>
+        <button class="icon-btn" onclick="signOut()" title="Sign out" style="display:flex;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M15 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9M10 12h11M17 8l4 4-4 4"/></svg>
+        </button>
+        <button class="btn" onclick="goTo('view-trip-basics')">+ New journey</button>
+      </div>
+    </header>
+
+    <nav class="tab-bar" aria-label="Main">
+      <div class="tab-bar-inner">
+        <a href="#" class="tab-link" onclick="goTo('view-home'); return false;">Home</a>
+        <a href="#" class="tab-link active" onclick="return false;">Journeys</a>
+        <a href="#" class="tab-link" onclick="goTo('view-companions'); return false;">Companions</a>
+        <a href="#" class="tab-link" onclick="goTo('view-about'); return false;">About</a>
+      </div>
+    </nav>
+
+    <div class="home-inner">
+      <div class="section-title">
+        <h3>All Journeys</h3>
+        <span class="count"><span id="journey-count-full">2</span> recorded</span>
+      </div>
+
+      <div class="journeys" id="journey-list-full"></div>
+
+      <div class="new-journey-cta">
         <button class="btn btn-ghost" onclick="goTo('view-trip-basics')">Record another journey →</button>
       </div>
+    </div>
+  </section>
+
+  <!-- ============ COMPANIONS ============ -->
+  <section id="view-companions" class="view">
+    <header class="app-header">
+      <div class="mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#D3B27C" stroke-width="1"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18M6 6l12 12M18 6L6 18"/></svg>
+        <div>
+          <div class="masthead">1A TRAVEL COLLECTION</div>
+          <h2 class="greeting-echo">My Travel Log</h2>
+        </div>
+      </div>
+      <div class="header-actions">
+        <span class="year">2026</span>
+        <button class="icon-btn" onclick="signOut()" title="Sign out" style="display:flex;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M15 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9M10 12h11M17 8l4 4-4 4"/></svg>
+        </button>
+        <button class="btn" onclick="goTo('view-trip-basics')">+ New journey</button>
+      </div>
+    </header>
+
+    <nav class="tab-bar" aria-label="Main">
+      <div class="tab-bar-inner">
+        <a href="#" class="tab-link" onclick="goTo('view-home'); return false;">Home</a>
+        <a href="#" class="tab-link" onclick="goTo('view-journeys'); return false;">Journeys</a>
+        <a href="#" class="tab-link active" onclick="return false;">Companions</a>
+        <a href="#" class="tab-link" onclick="goTo('view-about'); return false;">About</a>
+      </div>
+    </nav>
+
+    <div class="home-inner">
+      <div class="section-title">
+        <h3>Travel Companions</h3>
+        <span class="count"><span id="companion-count">0</span> people you've flown with</span>
+      </div>
+
+      <div class="journeys" id="companion-list"></div>
+
+      <p id="companion-empty" style="display:none; font-size:14px; color:var(--ink-soft); max-width:44ch; line-height:1.6;">
+        No companions recorded yet. Add a name under "Travelling with" when you record
+        a journey, and they'll appear here with every trip you've shared.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ ABOUT ============ -->
+  <section id="view-about" class="view">
+    <header class="app-header">
+      <div class="mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#D3B27C" stroke-width="1"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18M6 6l12 12M18 6L6 18"/></svg>
+        <div>
+          <div class="masthead">1A TRAVEL COLLECTION</div>
+          <h2 class="greeting-echo">My Travel Log</h2>
+        </div>
+      </div>
+      <div class="header-actions">
+        <span class="year">2026</span>
+        <button class="icon-btn" onclick="signOut()" title="Sign out" style="display:flex;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M15 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9M10 12h11M17 8l4 4-4 4"/></svg>
+        </button>
+        <button class="btn" onclick="goTo('view-trip-basics')">+ New journey</button>
+      </div>
+    </header>
+
+    <nav class="tab-bar" aria-label="Main">
+      <div class="tab-bar-inner">
+        <a href="#" class="tab-link" onclick="goTo('view-home'); return false;">Home</a>
+        <a href="#" class="tab-link" onclick="goTo('view-journeys'); return false;">Journeys</a>
+        <a href="#" class="tab-link" onclick="goTo('view-companions'); return false;">Companions</a>
+        <a href="#" class="tab-link active" onclick="return false;">About</a>
+      </div>
+    </nav>
+
+    <div class="home-inner" style="max-width:640px;">
+      <p class="eyebrow" style="margin-bottom:14px;">About</p>
+      <h2 style="font-size:30px; margin-bottom:22px;">A private record, kept properly.</h2>
+      <div style="font-size:15px; line-height:1.8; color:var(--ink-soft);">
+        <p style="margin-bottom:18px;">
+          1A Travel Collection is a private travel log for people who care about
+          more than just where they went — how they flew, who they were with, and
+          whether it was actually worth it.
+        </p>
+        <p style="margin-bottom:18px;">
+          Every journey becomes a keepsake: the route, the cabin, the service, the
+          small details that make a flight memorable or forgettable, recorded while
+          they're still fresh.
+        </p>
+        <p style="margin-bottom:18px;">
+          Your data belongs to you. Journeys are stored under your own account and
+          are never visible to anyone else.
+        </p>
+      </div>
+      <div class="rule" style="margin:32px 0 20px;"></div>
+      <p style="font-size:12px; color:var(--ink-soft);">Version 1.1 — 1A Travel Collection</p>
     </div>
   </section>
 
@@ -842,6 +1020,11 @@ a{color:inherit;}
         <div class="field"><label>Meal</label><input type="text" id="f-meal" placeholder="Beef fillet, NV Champagne" /></div>
 
         <div class="field span-2">
+          <label>Travelling with</label>
+          <input type="text" id="f-companions" placeholder="e.g. Yolanda, James — separate names with commas" />
+        </div>
+
+        <div class="field span-2">
           <label>Sleep quality</label>
           <div class="tone-select" id="f-sleep-group">
             <div class="tone-opt" data-val="Restless">Restless</div>
@@ -914,7 +1097,7 @@ const state = {
       points:"12,450", cash:"$87", lounge:"Qantas First Lounge, SYD",
       meal:"Beef fillet, NV Champagne",
       notes:"Excellent sleep. Champagne service outstanding — the crew remembered my name from check-in through to landing.",
-      photo:null
+      photo:null, companions:"Yolanda"
     },
     {
       city:"LONDON", origin:"Singapore", destination:"London",
@@ -924,7 +1107,7 @@ const state = {
       points:"—", cash:"$2,140", lounge:"SilverKris Lounge, SIN",
       meal:"Lobster thermidor",
       notes:"The suite doors make a real difference on a twelve-hour sector. Would fly again without hesitation.",
-      photo:null
+      photo:null, companions:"Yolanda, James"
     }
   ],
   draft:{ service:0, seat:0, dining:0, sleep:"Good", photo:null }
@@ -1038,6 +1221,7 @@ async function enterApp(){
   }
   const label = currentUser && currentUser.email ? currentUser.email.split('@')[0] : 'My';
   document.getElementById('home-greeting').textContent = `${cap(label)}'s Travel Log`;
+  document.querySelectorAll('.greeting-echo').forEach(el => el.textContent = `${cap(label)}'s Travel Log`);
   document.getElementById('btn-signout').style.display = 'flex';
   await loadJourneysFromDb();
   renderJourneyList();
@@ -1074,7 +1258,7 @@ function rowToJourney(row){
     service: row.service_rating, seat: row.seat_rating, dining: row.dining_rating,
     sleep: row.sleep_quality,
     points: row.points_used || '—', cash: row.cash_paid || '—',
-    lounge: row.lounge, meal: row.meal, notes: row.notes,
+    lounge: row.lounge, meal: row.meal, companions: row.companions, notes: row.notes,
     photo
   };
 }
@@ -1090,7 +1274,7 @@ async function persistJourney(journey){
     travel_date: journey.date || null,
     ticket_type: document.getElementById('f-tickettype').value || null,
     points_used: journey.points, cash_paid: journey.cash,
-    lounge: journey.lounge, meal: journey.meal, sleep_quality: journey.sleep,
+    lounge: journey.lounge, meal: journey.meal, companions: journey.companions, sleep_quality: journey.sleep,
     service_rating: journey.service, seat_rating: journey.seat, dining_rating: journey.dining,
     notes: journey.notes
   }).select().single();
@@ -1120,7 +1304,8 @@ function goTo(id){
 
 function beginJournal(){
   const name = document.getElementById('input-name').value.trim();
-  document.getElementById('home-greeting').textContent = name ? `${name.split(' ')[0]}'s Travel Log` : 'My Travel Log';
+  document.getElementById('home-greeting').textContent = (name ? `${name.split(' ')[0]}'s Travel Log` : 'My Travel Log');
+  document.querySelectorAll('.greeting-echo').forEach(el => el.textContent = (name ? `${name.split(' ')[0]}'s Travel Log` : 'My Travel Log'));
   renderJourneyList();
   goTo('view-home');
 }
@@ -1182,32 +1367,93 @@ document.getElementById('f-photo').addEventListener('change', (e)=>{
 });
 
 /* ============ JOURNEY LIST RENDER ============ */
+function journeyRowEl(j, idx){
+  const row = document.createElement('div');
+  row.className = 'journey-row';
+  row.onclick = ()=> viewSavedCard(idx);
+  row.innerHTML = `
+    <div class="jr-flag">${j.city.slice(0,2)}</div>
+    <div class="jr-main">
+      <div class="city">${cap(j.city)}</div>
+      <div class="route">${abbr(j.origin)} → ${abbr(j.destination)}</div>
+    </div>
+    <div class="jr-airline">
+      <div class="name">${j.airline}</div>
+      <div class="cabin">${j.cabin}</div>
+    </div>
+    <div class="jr-date">${j.month}</div>
+    <div class="jr-arrow">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M9 6l6 6-6 6"/></svg>
+    </div>
+  `;
+  return row;
+}
+
+// Home shows a short preview (first 3); the Journeys tab shows everything.
 function renderJourneyList(){
   const wrap = document.getElementById('journey-list');
   wrap.innerHTML = '';
-  state.journeys.forEach((j, idx)=>{
-    const row = document.createElement('div');
-    row.className = 'journey-row';
-    row.onclick = ()=> viewSavedCard(idx);
-    row.innerHTML = `
-      <div class="jr-flag">${j.city.slice(0,2)}</div>
-      <div class="jr-main">
-        <div class="city">${cap(j.city)}</div>
-        <div class="route">${abbr(j.origin)} → ${abbr(j.destination)}</div>
-      </div>
-      <div class="jr-airline">
-        <div class="name">${j.airline}</div>
-        <div class="cabin">${j.cabin}</div>
-      </div>
-      <div class="jr-date">${j.month}</div>
-      <div class="jr-arrow">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M9 6l6 6-6 6"/></svg>
-      </div>
-    `;
-    wrap.appendChild(row);
-  });
+  state.journeys.slice(0, 3).forEach((j, idx)=> wrap.appendChild(journeyRowEl(j, idx)));
   document.getElementById('journey-count').textContent = state.journeys.length;
+
+  renderJourneysFull();
+  renderCompanions();
 }
+
+function renderJourneysFull(){
+  const wrap = document.getElementById('journey-list-full');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  state.journeys.forEach((j, idx)=> wrap.appendChild(journeyRowEl(j, idx)));
+  document.getElementById('journey-count-full').textContent = state.journeys.length;
+}
+
+// Aggregates the free-text "companions" field across every journey into a
+// per-person card: name, how many journeys shared, and which destinations.
+function renderCompanions(){
+  const wrap = document.getElementById('companion-list');
+  const empty = document.getElementById('companion-empty');
+  if (!wrap) return;
+
+  const byName = {};
+  state.journeys.forEach((j) => {
+    (j.companions || '').split(',').map(n => n.trim()).filter(Boolean).forEach((name) => {
+      if (!byName[name]) byName[name] = [];
+      byName[name].push(j);
+    });
+  });
+
+  const names = Object.keys(byName).sort();
+  document.getElementById('companion-count').textContent = names.length;
+  wrap.innerHTML = '';
+
+  if (names.length === 0) {
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  names.forEach((name) => {
+    const trips = byName[name];
+    const destinations = trips.map(t => cap(t.city)).join(', ');
+    const card = document.createElement('div');
+    card.className = 'journey-row';
+    card.style.cursor = 'default';
+    card.innerHTML = `
+      <div class="jr-flag">${name.slice(0,2).toUpperCase()}</div>
+      <div class="jr-main">
+        <div class="city">${name}</div>
+        <div class="route">${trips.length} journey${trips.length === 1 ? '' : 's'} together</div>
+      </div>
+      <div class="jr-airline" style="grid-column: span 2;">
+        <div class="name">${destinations}</div>
+      </div>
+      <div class="jr-arrow"></div>
+    `;
+    wrap.appendChild(card);
+  });
+}
+
 function cap(s){ return s.charAt(0)+s.slice(1).toLowerCase(); }
 function abbr(city){
   const map = {Sydney:'SYD', Singapore:'SIN', London:'LHR', Tokyo:'HND', Auckland:'AKL', Melbourne:'MEL', "Hong Kong":'HKG', Paris:'CDG', "New York":'JFK', Dubai:'DXB'};
@@ -1238,6 +1484,7 @@ function createTravelCard(){
     cash: document.getElementById('f-cash').value || '—',
     lounge: document.getElementById('f-lounge').value,
     meal: document.getElementById('f-meal').value,
+    companions: document.getElementById('f-companions').value,
     notes: document.getElementById('f-notes').value || 'A quiet, unremarkable flight — which, at altitude, is its own kind of luxury.',
     photo: state.draft.photo
   };
@@ -1338,6 +1585,7 @@ async function saveJourneyAndReturn(){
       cash: document.getElementById('f-cash').value || '—',
       lounge: document.getElementById('f-lounge').value,
       meal: document.getElementById('f-meal').value,
+      companions: document.getElementById('f-companions').value,
       notes: document.getElementById('f-notes').value,
       photo: state.draft.photo
     };
@@ -1358,7 +1606,7 @@ async function saveJourneyAndReturn(){
 }
 
 function resetForm(){
-  ['f-origin','f-destination','f-date','f-airline','f-flightno','f-seat','f-aircraft','f-points','f-cash','f-lounge','f-meal','f-notes'].forEach(id=>{
+  ['f-origin','f-destination','f-date','f-airline','f-flightno','f-seat','f-aircraft','f-points','f-cash','f-lounge','f-meal','f-companions','f-notes'].forEach(id=>{
     document.getElementById(id).value = '';
   });
   state.draft = { service:4, seat:4, dining:4, sleep:'Good', photo:null };
