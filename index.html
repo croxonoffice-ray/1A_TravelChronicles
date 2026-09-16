@@ -213,8 +213,8 @@ a{color:inherit;}
 .app-header .mark svg{ width:26px; height:26px; }
 .app-header .masthead{
   font-family:'Cormorant', serif;
-  font-size:12px;
-  letter-spacing:0.13em;
+  font-size:17px;
+  letter-spacing:0.16em;
   white-space:nowrap;
   color:var(--gold-bright);
   font-weight:600;
@@ -714,7 +714,7 @@ a{color:inherit;}
 
 @media (max-width: 430px){
   .app-header{ padding:16px; gap:10px; }
-  .app-header .masthead{ font-size:10px; letter-spacing:0.09em; }
+  .app-header .masthead{ font-size:13px; letter-spacing:0.1em; }
   .app-header h2{ font-size:13px; }
   .app-header .mark{ gap:10px; min-width:0; }
   .app-header .mark svg{ width:22px; height:22px; flex-shrink:0; }
@@ -782,7 +782,7 @@ a{color:inherit;}
   <section id="view-home" class="view">
     <header class="app-header">
       <div class="mark">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#D3B27C" stroke-width="1"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18M6 6l12 12M18 6L6 18"/></svg>
+        <img src="icon-192.png" alt="1A Travel Collection" style="width:26px; height:26px; border-radius:50%; display:block;" />
         <div>
           <div class="masthead">1A TRAVEL COLLECTION</div>
           <h2 id="home-greeting">My Travel Log</h2>
@@ -834,7 +834,6 @@ a{color:inherit;}
           <div class="num">6</div>
           <div class="label">Business class</div>
         </div>
-
         <div class="stat">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M12 3l2.6 5.7 6.2.6-4.7 4.2 1.4 6.1L12 16.6 6.5 19.6l1.4-6.1L3.2 9.3l6.2-.6z"/></svg>
           <div class="num">4.6</div>
@@ -859,7 +858,7 @@ a{color:inherit;}
   <section id="view-journeys" class="view">
     <header class="app-header">
       <div class="mark">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#D3B27C" stroke-width="1"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18M6 6l12 12M18 6L6 18"/></svg>
+        <img src="icon-192.png" alt="1A Travel Collection" style="width:26px; height:26px; border-radius:50%; display:block;" />
         <div>
           <div class="masthead">1A TRAVEL COLLECTION</div>
           <h2 class="greeting-echo">My Travel Log</h2>
@@ -902,7 +901,7 @@ a{color:inherit;}
   <section id="view-companions" class="view">
     <header class="app-header">
       <div class="mark">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#D3B27C" stroke-width="1"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18M6 6l12 12M18 6L6 18"/></svg>
+        <img src="icon-192.png" alt="1A Travel Collection" style="width:26px; height:26px; border-radius:50%; display:block;" />
         <div>
           <div class="masthead">1A TRAVEL COLLECTION</div>
           <h2 class="greeting-echo">My Travel Log</h2>
@@ -946,7 +945,7 @@ a{color:inherit;}
   <section id="view-about" class="view">
     <header class="app-header">
       <div class="mark">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#D3B27C" stroke-width="1"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18M6 6l12 12M18 6L6 18"/></svg>
+        <img src="icon-192.png" alt="1A Travel Collection" style="width:26px; height:26px; border-radius:50%; display:block;" />
         <div>
           <div class="masthead">1A TRAVEL COLLECTION</div>
           <h2 class="greeting-echo">My Travel Log</h2>
@@ -999,7 +998,7 @@ a{color:inherit;}
   <section id="view-profile" class="view">
     <header class="app-header">
       <div class="mark">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#D3B27C" stroke-width="1"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18M6 6l12 12M18 6L6 18"/></svg>
+        <img src="icon-192.png" alt="1A Travel Collection" style="width:26px; height:26px; border-radius:50%; display:block;" />
         <div>
           <div class="masthead">1A TRAVEL COLLECTION</div>
           <h2 class="greeting-echo">My Travel Log</h2>
@@ -1088,7 +1087,7 @@ a{color:inherit;}
   <section id="view-trip-basics" class="view">
     <header class="app-header">
       <div class="mark">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#D3B27C" stroke-width="1"><circle cx="12" cy="12" r="9"/></svg>
+        <img src="icon-192.png" alt="1A Travel Collection" style="width:26px; height:26px; border-radius:50%; display:block;" />
         <div><div class="masthead">1A TRAVEL COLLECTION</div></div>
       </div>
       <button class="icon-btn" onclick="goTo('view-home')" title="Cancel">
@@ -1120,7 +1119,7 @@ a{color:inherit;}
   <section id="view-journey-form" class="view">
     <header class="app-header">
       <div class="mark">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#D3B27C" stroke-width="1"><circle cx="12" cy="12" r="9"/></svg>
+        <img src="icon-192.png" alt="1A Travel Collection" style="width:26px; height:26px; border-radius:50%; display:block;" />
         <div><div class="masthead">1A TRAVEL COLLECTION</div></div>
       </div>
       <button class="icon-btn" onclick="goTo('view-home')" title="Cancel">
@@ -1371,13 +1370,23 @@ async function enterApp(){
   if (window.location.hash || window.location.search) {
     window.history.replaceState(null, '', REDIRECT_URL);
   }
-  const label = currentUser && currentUser.email ? currentUser.email.split('@')[0] : 'My';
-  document.getElementById('home-greeting').textContent = `${cap(label)}'s Travel Log`;
-  document.querySelectorAll('.greeting-echo').forEach(el => el.textContent = `${cap(label)}'s Travel Log`);
+  const setGreeting = (text) => {
+    document.getElementById('home-greeting').textContent = text;
+    document.querySelectorAll('.greeting-echo').forEach(el => el.textContent = text);
+  };
+  // Show a reasonable guess immediately (from the email), then correct it
+  // once the real profile first name has loaded, so there's no blank/stale
+  // flash while the database round-trip is in flight.
+  const emailGuess = currentUser && currentUser.email ? cap(currentUser.email.split('@')[0]) : '';
+  setGreeting(emailGuess ? `Welcome ${emailGuess}` : 'Welcome');
+
   document.getElementById('btn-signout').style.display = 'flex';
   await loadJourneysFromDb();
   renderJourneyList();
   await loadProfileFromDb();
+  if (state.profile.firstName) {
+    setGreeting(`Welcome ${state.profile.firstName}`);
+  }
   goTo('view-home');
 }
 
@@ -1608,8 +1617,9 @@ function goTo(id){
 
 function beginJournal(){
   const name = document.getElementById('input-name').value.trim();
-  document.getElementById('home-greeting').textContent = (name ? `${name.split(' ')[0]}'s Travel Log` : 'My Travel Log');
-  document.querySelectorAll('.greeting-echo').forEach(el => el.textContent = (name ? `${name.split(' ')[0]}'s Travel Log` : 'My Travel Log'));
+  const greeting = name ? `Welcome ${name.split(' ')[0]}` : 'Welcome';
+  document.getElementById('home-greeting').textContent = greeting;
+  document.querySelectorAll('.greeting-echo').forEach(el => el.textContent = greeting);
 
   // Seed a demo profile so the Profile tab isn't empty while testing without
   // a connected database — mirrors the seeded example journeys.
