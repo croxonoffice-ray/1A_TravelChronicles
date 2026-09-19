@@ -309,6 +309,14 @@ a{color:inherit;}
 .ffp-remove-btn:hover{ color:#B00020; }
 .ffp-remove-btn svg{ width:16px; height:16px; }
 
+.city-row{
+  display:grid; grid-template-columns:1fr auto; gap:16px; align-items:end;
+  padding:12px 0;
+  border-bottom:1px solid var(--paper-line);
+}
+.city-row:first-child{ padding-top:0; }
+
+
 /* ============ COMMENTS ============ */
 .comment-form{
   border:1px solid var(--paper-line);
@@ -426,7 +434,7 @@ a{color:inherit;}
 
 .journey-row{
   display:grid;
-  grid-template-columns:64px 1.4fr 1fr 1fr auto;
+  grid-template-columns:64px 2fr 1fr auto;
   align-items:center;
   gap:20px;
   padding:20px 22px;
@@ -536,60 +544,6 @@ a{color:inherit;}
 }
 .field textarea{ resize:vertical; min-height:70px; font-size:16px; line-height:1.6; }
 
-.select-wrap{ position:relative; }
-.select-wrap::after{
-  content:"";
-  position:absolute; right:2px; bottom:16px;
-  width:7px; height:7px;
-  border-right:1px solid var(--ink-soft);
-  border-bottom:1px solid var(--ink-soft);
-  transform:rotate(45deg);
-  pointer-events:none;
-}
-
-.pair-inline{ display:grid; grid-template-columns:1fr 1fr; gap:28px; }
-
-.rating-field{ margin-bottom:6px; }
-.stars{ display:flex; gap:6px; margin-top:2px; }
-.star-btn{
-  background:none; border:none; padding:2px;
-  color:var(--paper-line);
-  transition:color .15s var(--ease), transform .15s var(--ease);
-}
-.star-btn svg{ width:22px; height:22px; }
-.star-btn.filled{ color:var(--gold); }
-.star-btn:hover{ transform:scale(1.12); }
-
-.tone-select{ display:flex; gap:10px; margin-top:4px; }
-.tone-opt{
-  flex:1;
-  text-align:center;
-  padding:10px 6px;
-  border:1px solid var(--paper-line);
-  font-size:12px;
-  color:var(--ink-soft);
-  letter-spacing:0.03em;
-  transition:all .2s var(--ease);
-}
-.tone-opt.selected{ border-color:var(--gold); color:var(--navy); background:rgba(184,147,90,0.08); }
-
-.photo-well{
-  border:1px dashed var(--paper-line);
-  padding:26px;
-  text-align:center;
-  cursor:pointer;
-  transition:border-color .2s var(--ease);
-  position:relative;
-  overflow:hidden;
-}
-.photo-well:hover{ border-color:var(--gold-dim); }
-.photo-well svg{ width:22px; height:22px; color:var(--gold); margin-bottom:10px; }
-.photo-well .hint{ font-size:12px; color:var(--ink-soft); }
-.photo-well img{
-  position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
-}
-.photo-well input{ display:none; }
-
 .form-actions{
   display:flex; justify-content:space-between; align-items:center;
   margin-top:44px;
@@ -634,8 +588,7 @@ a{color:inherit;}
 }
 
 .tc-top{
-  padding:34px 34px 26px;
-  border-bottom:1px dashed var(--paper-line);
+  padding:34px 34px 40px;
   position:relative;
 }
 .tc-dest{
@@ -651,20 +604,6 @@ a{color:inherit;}
   letter-spacing:0.05em;
   margin-top:6px;
 }
-.tc-flight{
-  display:flex; justify-content:space-between; align-items:flex-end;
-  margin-top:20px;
-}
-.tc-flight .airline{ font-size:14px; color:var(--navy); }
-.tc-flight .flightno{ color:var(--gold); font-size:13px; margin-top:2px; }
-.tc-cabin{
-  font-family:'EB Garamond', serif;
-  font-style:italic;
-  font-size:15px;
-  color:var(--ink-soft);
-  text-align:right;
-}
-.tc-cabin .month{ display:block; font-size:11px; font-style:normal; letter-spacing:0.06em; color:var(--ink-soft); margin-top:4px; }
 
 /* the notches that make it read as a ticket */
 .tc-top::before, .tc-top::after{
@@ -675,83 +614,6 @@ a{color:inherit;}
 }
 .tc-top::before{ left:-9px; }
 .tc-top::after{ right:-9px; }
-
-.tc-body{ padding:28px 34px 34px; display:flex; gap:28px; align-items:flex-start; }
-
-.tc-stamp{
-  flex-shrink:0;
-  width:96px; height:96px;
-  border-radius:50%;
-  border:1.5px solid var(--gold);
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  color:var(--gold);
-  transform:rotate(-8deg);
-  position:relative;
-}
-.tc-stamp::before{
-  content:"";
-  position:absolute; inset:6px;
-  border:1px solid var(--gold-dim);
-  border-radius:50%;
-}
-.tc-stamp .score{ font-family:'EB Garamond', serif; font-size:28px; font-weight:700; line-height:1; }
-.tc-stamp .of{ font-size:9px; letter-spacing:0.1em; margin-top:2px; }
-
-.tc-ratings{ flex:1; }
-.tc-rating-row{
-  display:flex; align-items:center; justify-content:space-between;
-  padding:7px 0;
-  border-bottom:1px solid var(--paper-line);
-  font-size:12px;
-}
-.tc-rating-row:last-child{ border-bottom:none; }
-.tc-rating-row .lbl{ color:var(--ink-soft); letter-spacing:0.03em; }
-.tc-rating-row .val{ display:flex; gap:3px; }
-.tc-rating-row .val svg{ width:12px; height:12px; color:var(--gold); }
-.tc-rating-row .val svg.empty{ color:var(--paper-line); }
-
-.tc-meta{
-  padding:0 34px 22px;
-  display:flex; gap:22px;
-  font-size:11.5px;
-  color:var(--ink-soft);
-}
-.tc-meta span b{ color:var(--navy); font-weight:500; }
-
-.tc-cost{
-  margin:0 34px 24px;
-  padding:14px 18px;
-  background:var(--navy);
-  color:var(--ivory);
-  display:flex; justify-content:space-between; align-items:center;
-}
-.tc-cost .points{ font-family:'EB Garamond', serif; font-size:17px; }
-.tc-cost .taxes{ font-size:12px; color:var(--gold-bright); }
-
-.tc-notes{
-  margin:0 34px 34px;
-  font-family:'EB Garamond', serif;
-  font-style:italic;
-  font-size:16px;
-  line-height:1.6;
-  color:var(--ink);
-  border-left:2px solid var(--gold-dim);
-  padding-left:16px;
-}
-
-.tc-photo{
-  height:150px;
-  margin:0 34px 30px;
-  position:relative;
-  overflow:hidden;
-  border:1px solid var(--paper-line);
-}
-.tc-photo img{ width:100%; height:100%; object-fit:cover; display:block; }
-.tc-photo.placeholder{
-  background:linear-gradient(135deg, #1b2c4a, #0e1a30);
-  display:flex; align-items:center; justify-content:center;
-}
-.tc-photo.placeholder svg{ width:34px; height:34px; color:rgba(211,178,124,0.5); }
 
 .card-actions{
   display:flex; gap:14px; justify-content:center; margin-top:34px;
@@ -765,14 +627,11 @@ a{color:inherit;}
   .stat-strip{ grid-template-columns:repeat(3,1fr); row-gap:24px; }
   .stat{ border-right:1px solid var(--paper-line); }
   .stat:nth-child(3n){ border-right:none; }
-  .journey-row{ grid-template-columns:48px 1fr; grid-template-areas:"flag main" "flag airline" "flag date"; row-gap:6px; }
+  .journey-row{ grid-template-columns:48px 1fr; grid-template-areas:"flag main" "flag date"; row-gap:6px; }
   .journey-row .jr-arrow{ display:none; }
   .journey-row::after{ left:48px; }
   .form-shell{ padding:0 20px 80px; }
   .field-grid{ grid-template-columns:1fr; }
-  .pair-inline{ grid-template-columns:1fr; }
-  .tc-body{ flex-direction:column; align-items:center; text-align:center; }
-  .tc-ratings{ width:100%; }
   .profile-edit-row{ grid-template-columns:1fr; gap:20px; margin-bottom:4px; }
   .ffp-edit-row{ grid-template-columns:1fr; gap:12px; padding-bottom:16px; }
   .ffp-remove-btn{ justify-self:flex-end; }
@@ -1220,126 +1079,32 @@ a{color:inherit;}
     </header>
     <div class="form-shell">
       <div class="form-head">
-        <div class="stepper"><span class="step-dot active"></span><span class="step-dot"></span></div>
-        <div class="eyebrow">Departure Card</div>
-        <h2>Where did this journey take you?</h2>
-        <p>Begin with the route — the details come next.</p>
+        <div class="eyebrow">Trip Basics</div>
+        <h2>Tell us about this journey</h2>
+        <p>The essentials — flights, hotels, and lounges attach to this trip later.</p>
       </div>
 
       <div class="field-grid">
-        <div class="field"><label>Departure city</label><input type="text" id="f-origin" placeholder="Sydney" /></div>
-        <div class="field"><label>Arrival city</label><input type="text" id="f-destination" placeholder="Singapore" /></div>
-        <div class="field span-2"><label>Date of travel</label><input type="date" id="f-date" /></div>
+        <div class="field span-2"><label>Journey title</label><input type="text" id="f-title" placeholder="e.g. Singapore Business Trip" /></div>
+        <div class="field span-2"><label>Description (optional)</label><textarea id="f-description" placeholder="A few words about this journey..." style="min-height:60px;"></textarea></div>
+        <div class="field"><label>Start date</label><input type="date" id="f-date-from" /></div>
+        <div class="field"><label>End date</label><input type="date" id="f-date-to" /></div>
+      </div>
+
+      <div class="field span-2" style="margin-top:8px;">
+        <label>Cities visited</label>
+        <div id="cities-edit-list"></div>
+        <button type="button" class="btn btn-ghost" style="margin-top:10px;" onclick="addCityRow()">+ Add city</button>
       </div>
 
       <div class="form-actions">
         <span></span>
-        <button class="btn btn-solid" id="btn-continue-step1" onclick="goTo('view-journey-form')">Continue →</button>
+        <button class="btn btn-solid" id="btn-continue-step1" onclick="createTravelCard()">Save journey →</button>
       </div>
     </div>
   </section>
 
-  <!-- ============ STEP 2: FULL DETAILS ============ -->
-  <section id="view-journey-form" class="view">
-    <header class="app-header">
-      <div class="mark">
-        <img src="icon-192.png" alt="1A Travel Collection" style="width:26px; height:26px; border-radius:50%; display:block;" />
-        <div><div class="masthead">1A TRAVEL COLLECTION</div></div>
-      </div>
-      <button class="icon-btn" onclick="goTo('view-home')" title="Cancel">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M6 6l12 12M18 6L6 18"/></svg>
-      </button>
-    </header>
-    <div class="form-shell">
-      <div class="form-head">
-        <div class="stepper"><span class="step-dot"></span><span class="step-dot active"></span></div>
-        <div class="eyebrow">The Details</div>
-        <h2>Tell the story of the flight</h2>
-        <p>The particulars worth remembering, in your own words.</p>
-      </div>
-
-      <div class="field-grid">
-        <div class="field"><label>Airline</label><input type="text" id="f-airline" placeholder="Qantas" /></div>
-        <div class="field"><label>Flight number</label><input type="text" id="f-flightno" placeholder="QF5" /></div>
-
-        <div class="field select-wrap">
-          <label>Cabin</label>
-          <select id="f-cabin">
-            <option>First</option>
-            <option selected>Business</option>
-            <option>Premium Economy</option>
-            <option>Economy</option>
-          </select>
-        </div>
-        <div class="field"><label>Seat</label><input type="text" id="f-seat" placeholder="3A" /></div>
-
-        <div class="field"><label>Aircraft</label><input type="text" id="f-aircraft" placeholder="A380-800" /></div>
-        <div class="field select-wrap">
-          <label>Ticket type</label>
-          <select id="f-tickettype">
-            <option>Points redemption</option>
-            <option>Cash fare</option>
-            <option>Upgrade</option>
-            <option>Companion fare</option>
-          </select>
-        </div>
-
-        <div class="field"><label>Points used</label><input type="text" id="f-points" placeholder="12,450" /></div>
-        <div class="field"><label>Cash paid (taxes/fees)</label><input type="text" id="f-cash" placeholder="$87" /></div>
-
-        <div class="field"><label>Lounge visited</label><input type="text" id="f-lounge" placeholder="Qantas First Lounge, SYD" /></div>
-        <div class="field"><label>Meal</label><input type="text" id="f-meal" placeholder="Beef fillet, NV Champagne" /></div>
-
-        <div class="field span-2">
-          <label>Travelling with</label>
-          <input type="text" id="f-companions" placeholder="e.g. Yolanda, James — separate names with commas" />
-        </div>
-
-        <div class="field span-2">
-          <label>Sleep quality</label>
-          <div class="tone-select" id="f-sleep-group">
-            <div class="tone-opt" data-val="Restless">Restless</div>
-            <div class="tone-opt selected" data-val="Good">Good</div>
-            <div class="tone-opt" data-val="Excellent">Excellent</div>
-          </div>
-        </div>
-
-        <div class="field">
-          <label>Service</label>
-          <div class="stars" data-group="service"></div>
-        </div>
-        <div class="field">
-          <label>Seat comfort</label>
-          <div class="stars" data-group="seat"></div>
-        </div>
-        <div class="field">
-          <label>Dining</label>
-          <div class="stars" data-group="dining"></div>
-        </div>
-        <div class="field"></div>
-
-        <div class="field span-2">
-          <label>Notes</label>
-          <textarea id="f-notes" placeholder="Excellent sleep. Champagne service outstanding..."></textarea>
-        </div>
-
-        <div class="field span-2">
-          <label>Photograph</label>
-          <label class="photo-well" id="photo-well">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="5" width="18" height="14" rx="1"/><circle cx="9" cy="10" r="1.6"/><path d="M21 17l-6-5-4 3.5-3-2L3 17"/></svg>
-            <div class="hint">Add a photograph from this journey</div>
-            <input type="file" id="f-photo" accept="image/*" />
-          </label>
-        </div>
-      </div>
-
-      <div class="form-actions">
-        <button class="btn btn-ghost" onclick="goTo('view-trip-basics')">← Back</button>
-        <button class="btn btn-solid" onclick="createTravelCard()">Create Travel Card</button>
-      </div>
-    </div>
-  </section>
-
+  <!-- ============ CARD REVEAL ============ -->
   <!-- ============ CARD REVEAL ============ -->
   <section id="view-card-reveal" class="view">
     <div class="card-view-wrap">
@@ -1347,7 +1112,7 @@ a{color:inherit;}
         <div class="card-preface">YOUR JOURNEY, RECORDED</div>
         <div class="travel-card" id="travel-card"></div>
         <div class="card-actions">
-          <button class="btn btn-ghost" style="color:var(--gold-bright)" onclick="goTo('view-journey-form')">Edit details</button>
+          <button class="btn btn-ghost" style="color:var(--gold-bright)" onclick="goTo('view-trip-basics')">Edit details</button>
           <button class="btn btn-solid" onclick="saveJourneyAndReturn()">Save to travel log</button>
         </div>
       </div>
@@ -1361,27 +1126,16 @@ a{color:inherit;}
 const state = {
   journeys: [
     {
-      city:"SINGAPORE", origin:"Sydney", destination:"Singapore",
-      airline:"Qantas", flightno:"QF5", cabin:"Business",
-      month:"December 2026", date:"2026-12-05",
-      service:5, seat:4, dining:4, sleep:"Excellent",
-      points:"12,450", cash:"$87", lounge:"Qantas First Lounge, SYD",
-      meal:"Beef fillet, NV Champagne",
-      notes:"Excellent sleep. Champagne service outstanding — the crew remembered my name from check-in through to landing.",
-      photo:null, companions:"Yolanda"
+      title:"Singapore Business Trip", description:"A short business trip via Singapore.",
+      city:"SINGAPORE BUSINESS TRIP", origin:"Sydney", destination:"Singapore", cities:["Sydney","Singapore"],
+      dateFrom:"2026-12-05", dateTo:"2026-12-05", month:"December 2026"
     },
     {
-      city:"LONDON", origin:"Singapore", destination:"London",
-      airline:"Singapore Airlines", flightno:"SQ322", cabin:"Business",
-      month:"December 2026", date:"2026-12-08",
-      service:5, seat:5, dining:4, sleep:"Good",
-      points:"—", cash:"$2,140", lounge:"SilverKris Lounge, SIN",
-      meal:"Lobster thermidor",
-      notes:"The suite doors make a real difference on a twelve-hour sector. Would fly again without hesitation.",
-      photo:null, companions:"Yolanda, James"
+      title:"London via Singapore", description:"Onward leg from Singapore to London.",
+      city:"LONDON VIA SINGAPORE", origin:"Singapore", destination:"London", cities:["Singapore","London"],
+      dateFrom:"2026-12-08", dateTo:"2026-12-08", month:"December 2026"
     }
   ],
-  draft:{ service:0, seat:0, dining:0, sleep:"Good", photo:null },
   profile: {
     firstName: '', lastName: '', homeCity: '', email: '', dateJoined: null,
     programs: []
@@ -1524,7 +1278,7 @@ async function loadJourneysFromDb(){
   if (!sb || !currentUser) return;
   const { data, error } = await sb
     .from('journeys')
-    .select('*, journey_photos(storage_path)')
+    .select('*, journey_cities(city_name, sort_order)')
     .eq('traveler_id', currentUser.id)
     .order('created_at', { ascending: false });
   if (error) { console.error(error); return; }
@@ -1532,25 +1286,18 @@ async function loadJourneysFromDb(){
 }
 
 function rowToJourney(row){
-  const month = row.travel_date
-    ? new Date(row.travel_date + 'T00:00:00').toLocaleDateString('en-US', { month:'long', year:'numeric' })
-    : '';
-  let photo = null;
-  if (row.journey_photos && row.journey_photos.length && sb) {
-    const path = row.journey_photos[0].storage_path;
-    photo = sb.storage.from('journey-photos').getPublicUrl(path).data.publicUrl;
-  }
+  const cities = (row.journey_cities || [])
+    .slice()
+    .sort((a, b) => a.sort_order - b.sort_order)
+    .map(c => c.city_name);
   return {
     id: row.id,
-    city: row.destination.toUpperCase(),
-    origin: row.origin, destination: row.destination,
-    airline: row.airline, flightno: row.flight_number, cabin: row.cabin,
-    month, date: row.travel_date,
-    service: row.service_rating, seat: row.seat_rating, dining: row.dining_rating,
-    sleep: row.sleep_quality,
-    points: row.points_used || '—', cash: row.cash_paid || '—',
-    lounge: row.lounge, meal: row.meal, companions: row.companions, notes: row.notes,
-    photo
+    title: row.title || 'Untitled Journey',
+    description: row.description || '',
+    city: (row.title || '').toUpperCase(),
+    origin: cities[0] || '', destination: cities[cities.length - 1] || '', cities,
+    dateFrom: row.date_from, dateTo: row.date_to,
+    month: monthYear(row.date_from)
   };
 }
 
@@ -1558,32 +1305,19 @@ async function persistJourney(journey){
   if (!sb || !currentUser) return null;
   const { data, error } = await sb.from('journeys').insert({
     traveler_id: currentUser.id,
-    origin: journey.origin, destination: journey.destination,
-    airline: journey.airline, flight_number: journey.flightno,
-    aircraft: document.getElementById('f-aircraft').value || null,
-    cabin: journey.cabin, seat: document.getElementById('f-seat').value || null,
-    travel_date: journey.date || null,
-    ticket_type: document.getElementById('f-tickettype').value || null,
-    points_used: journey.points, cash_paid: journey.cash,
-    lounge: journey.lounge, meal: journey.meal, companions: journey.companions, sleep_quality: journey.sleep,
-    service_rating: journey.service, seat_rating: journey.seat, dining_rating: journey.dining,
-    notes: journey.notes
+    title: journey.title, description: journey.description || null,
+    date_from: journey.dateFrom || null, date_to: journey.dateTo || null
   }).select().single();
 
   if (error) { console.error(error); alert('Could not save journey: ' + error.message); return null; }
 
-  if (journey.photo) {
-    await uploadJourneyPhoto(data.id, journey.photo);
+  if (journey.cities && journey.cities.length) {
+    await sb.from('journey_cities').insert(
+      journey.cities.map((city, idx) => ({ journey_id: data.id, city_name: city, sort_order: idx }))
+    );
   }
-  return data.id;
-}
 
-async function uploadJourneyPhoto(journeyId, dataUrl){
-  const blob = await (await fetch(dataUrl)).blob();
-  const path = `${currentUser.id}/${journeyId}.jpg`;
-  const { error: upErr } = await sb.storage.from('journey-photos').upload(path, blob, { upsert:true, contentType: blob.type });
-  if (upErr) { console.error(upErr); return; }
-  await sb.from('journey_photos').insert({ journey_id: journeyId, storage_path: path });
+  return data.id;
 }
 
 /* ============ PROFILE ============ */
@@ -1675,6 +1409,55 @@ function enterProfileEditMode(){
 function cancelProfileEdit(){
   document.getElementById('profile-edit-mode').style.display = 'none';
   document.getElementById('profile-view-mode').style.display = 'block';
+}
+
+function addCityRow(city = ''){
+  const row = document.createElement('div');
+  row.className = 'city-row';
+  row.innerHTML = `
+    <div class="field"><label>City</label><input type="text" class="city-input" placeholder="e.g. Paris" /></div>
+    <button type="button" class="ffp-remove-btn" onclick="this.closest('.city-row').remove()" title="Remove">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  `;
+  row.querySelector('.city-input').value = city;
+  document.getElementById('cities-edit-list').appendChild(row);
+}
+
+function getCitiesFromForm(){
+  return [...document.querySelectorAll('#cities-edit-list .city-input')]
+    .map(input => input.value.trim())
+    .filter(Boolean);
+}
+
+// Formats a date or date range in the app's editorial style:
+// single date -> "5 December 2026"
+// same month  -> "5 – 8 December 2026"
+// diff month, same year -> "28 November – 3 December 2026"
+// diff year   -> "28 December 2026 – 3 January 2027"
+function formatDateRange(fromStr, toStr){
+  if (!fromStr) return '';
+  const from = new Date(fromStr + 'T00:00:00');
+  if (!toStr || toStr === fromStr) {
+    return from.toLocaleDateString('en-US', { day:'numeric', month:'long', year:'numeric' });
+  }
+  const to = new Date(toStr + 'T00:00:00');
+  const sameYear = from.getFullYear() === to.getFullYear();
+  const sameMonth = sameYear && from.getMonth() === to.getMonth();
+
+  if (sameMonth) {
+    return `${from.getDate()} – ${to.toLocaleDateString('en-US', { day:'numeric', month:'long', year:'numeric' })}`;
+  }
+  if (sameYear) {
+    return `${from.toLocaleDateString('en-US', { day:'numeric', month:'long' })} – ${to.toLocaleDateString('en-US', { day:'numeric', month:'long', year:'numeric' })}`;
+  }
+  return `${from.toLocaleDateString('en-US', { day:'numeric', month:'long', year:'numeric' })} – ${to.toLocaleDateString('en-US', { day:'numeric', month:'long', year:'numeric' })}`;
+}
+
+// The month/year used for list groupings and badges — anchored to the start date.
+function monthYear(fromStr){
+  if (!fromStr) return '';
+  return new Date(fromStr + 'T00:00:00').toLocaleDateString('en-US', { month:'long', year:'numeric' });
 }
 
 function addProgramRow(program = '', status = ''){
@@ -1845,78 +1628,20 @@ function beginJournal(){
   goTo('view-home');
 }
 
-/* ============ STAR WIDGETS ============ */
-const starSvg = (filled)=>`<svg viewBox="0 0 24 24" fill="${filled?'currentColor':'none'}" stroke="currentColor" stroke-width="1"><path d="M12 3l2.6 5.7 6.2.6-4.7 4.2 1.4 6.1L12 16.6 6.5 19.6l1.4-6.1L3.2 9.3l6.2-.6z"/></svg>`;
-
-function buildStarInput(container, group){
-  container.innerHTML = '';
-  for(let i=1;i<=5;i++){
-    const b = document.createElement('button');
-    b.type='button'; b.className='star-btn'; b.dataset.val=i;
-    b.innerHTML = starSvg(false);
-    b.addEventListener('click', ()=>{
-      state.draft[group] = i;
-      paintStars(container, i);
-    });
-    container.appendChild(b);
-  }
-}
-function paintStars(container, val){
-  [...container.children].forEach((b,idx)=>{
-    const filled = idx < val;
-    b.classList.toggle('filled', filled);
-    b.innerHTML = starSvg(filled);
-  });
-}
-document.querySelectorAll('.stars').forEach(el=>{
-  const group = el.dataset.group;
-  buildStarInput(el, group);
-  paintStars(el, 4);
-  state.draft[group] = 4;
-});
-
-/* sleep tone selector */
-document.querySelectorAll('#f-sleep-group .tone-opt').forEach(opt=>{
-  opt.addEventListener('click', ()=>{
-    document.querySelectorAll('#f-sleep-group .tone-opt').forEach(o=>o.classList.remove('selected'));
-    opt.classList.add('selected');
-    state.draft.sleep = opt.dataset.val;
-  });
-});
-
-/* photo preview */
-document.getElementById('f-photo').addEventListener('change', (e)=>{
-  const file = e.target.files[0];
-  if(!file) return;
-  const reader = new FileReader();
-  reader.onload = (ev)=>{
-    state.draft.photo = ev.target.result;
-    const well = document.getElementById('photo-well');
-    well.querySelector('.hint').style.display='none';
-    well.querySelector('svg').style.display='none';
-    const img = document.createElement('img');
-    img.src = ev.target.result;
-    well.appendChild(img);
-  };
-  reader.readAsDataURL(file);
-});
-
 /* ============ JOURNEY LIST RENDER ============ */
 function journeyRowEl(j, idx){
   const row = document.createElement('div');
   row.className = 'journey-row';
   row.onclick = ()=> viewSavedCard(idx);
+  const title = j.title || j.city || 'Untitled Journey';
+  const routeLine = j.cities && j.cities.length ? j.cities.join(' → ') : `${j.origin || ''} → ${j.destination || ''}`;
   row.innerHTML = `
-    <div class="jr-flag">${j.city.slice(0,2)}</div>
+    <div class="jr-flag">${title.slice(0,2).toUpperCase()}</div>
     <div class="jr-main">
-      <div class="city">${cap(j.city)}</div>
-      <div class="route">${abbr(j.origin)} → ${abbr(j.destination)}</div>
+      <div class="city">${title}</div>
+      <div class="route">${routeLine}</div>
     </div>
-    <div class="jr-airline">
-      <div class="name">${j.airline}</div>
-      <div class="cabin">${j.cabin}</div>
-    </div>
-    <div class="jr-date">${j.month}</div>
+    <div class="jr-date">${j.month || monthYear(j.dateFrom)}</div>
     <div class="jr-arrow">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M9 6l6 6-6 6"/></svg>
     </div>
@@ -1970,7 +1695,7 @@ function renderCompanions(){
 
   names.forEach((name) => {
     const trips = byName[name];
-    const destinations = trips.map(t => cap(t.city)).join(', ');
+    const destinations = trips.map(t => t.title || cap(t.city)).join(', ');
     const card = document.createElement('div');
     card.className = 'journey-row';
     card.style.cursor = 'default';
@@ -1980,9 +1705,7 @@ function renderCompanions(){
         <div class="city">${name}</div>
         <div class="route">${trips.length} journey${trips.length === 1 ? '' : 's'} together</div>
       </div>
-      <div class="jr-airline" style="grid-column: span 2;">
-        <div class="name">${destinations}</div>
-      </div>
+      <div class="name">${destinations}</div>
       <div class="jr-arrow"></div>
     `;
     wrap.appendChild(card);
@@ -1999,29 +1722,18 @@ function abbr(city){
 let viewingSaved = null;
 
 function createTravelCard(){
-  const origin = document.getElementById('f-origin').value || 'Sydney';
-  const destination = document.getElementById('f-destination').value || 'Singapore';
-  const date = document.getElementById('f-date').value;
-  const month = date ? new Date(date+'T00:00:00').toLocaleDateString('en-US',{month:'long', year:'numeric'}) : 'December 2026';
+  const title = document.getElementById('f-title').value.trim() || 'Untitled Journey';
+  const description = document.getElementById('f-description').value.trim();
+  const dateFrom = document.getElementById('f-date-from').value;
+  const dateTo = document.getElementById('f-date-to').value;
+  const cities = getCitiesFromForm();
 
   const journey = {
-    city: destination.toUpperCase(),
-    origin, destination,
-    airline: document.getElementById('f-airline').value || 'Qantas',
-    flightno: document.getElementById('f-flightno').value || 'QF5',
-    cabin: document.getElementById('f-cabin').value,
-    month, date,
-    service: state.draft.service || 4,
-    seat: state.draft.seat || 4,
-    dining: state.draft.dining || 4,
-    sleep: state.draft.sleep,
-    points: document.getElementById('f-points').value || '—',
-    cash: document.getElementById('f-cash').value || '—',
-    lounge: document.getElementById('f-lounge').value,
-    meal: document.getElementById('f-meal').value,
-    companions: document.getElementById('f-companions').value,
-    notes: document.getElementById('f-notes').value || 'A quiet, unremarkable flight — which, at altitude, is its own kind of luxury.',
-    photo: state.draft.photo
+    title, description,
+    city: title.toUpperCase(),
+    origin: cities[0] || '', destination: cities[cities.length - 1] || '', cities,
+    dateFrom, dateTo,
+    month: monthYear(dateFrom) || ''
   };
 
   viewingSaved = null;
@@ -2035,57 +1747,17 @@ function viewSavedCard(idx){
   goTo('view-card-reveal');
 }
 
-function stampScore(j){
-  const avg = (j.service + j.seat + j.dining) / 3;
-  return avg.toFixed(1);
-}
-
-function starsHtml(val){
-  let out = '';
-  for(let i=1;i<=5;i++){
-    out += `<svg class="${i<=val?'':'empty'}" viewBox="0 0 24 24" fill="${i<=val?'currentColor':'none'}" stroke="currentColor" stroke-width="1"><path d="M12 3l2.6 5.7 6.2.6-4.7 4.2 1.4 6.1L12 16.6 6.5 19.6l1.4-6.1L3.2 9.3l6.2-.6z"/></svg>`;
-  }
-  return out;
-}
-
 function renderCard(j, animate){
   const el = document.getElementById('travel-card');
   el.classList.remove('stamped');
 
-  const photoBlock = j.photo
-    ? `<div class="tc-photo"><img src="${j.photo}" alt=""/></div>`
-    : `<div class="tc-photo placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="5" width="18" height="14" rx="1"/><circle cx="9" cy="10" r="1.6"/><path d="M21 17l-6-5-4 3.5-3-2L3 17"/></svg></div>`;
-
   el.innerHTML = `
-    <div class="tc-top">
-      <div class="tc-dest">${cap(j.city)}</div>
-      <div class="tc-route">${j.origin} → ${j.destination}</div>
-      <div class="tc-flight">
-        <div>
-          <div class="airline">${j.airline} ${j.flightno}</div>
-          <div class="flightno">${j.cabin} Class</div>
-        </div>
-        <div class="tc-cabin">${j.cabin}<span class="month">${j.month}</span></div>
-      </div>
+    <div class="tc-top" style="border-bottom:none;">
+      <div class="tc-dest">${j.title}</div>
+      <div class="tc-route">${j.cities && j.cities.length ? j.cities.join(' → ') : `${j.origin} → ${j.destination}`}</div>
+      ${j.description ? `<div style="font-family:'EB Garamond',serif; font-style:italic; font-size:15px; color:var(--ink-soft); margin-top:12px; line-height:1.6;">${j.description}</div>` : ''}
+      <div style="margin-top:18px; font-size:13px; color:var(--ink-soft); letter-spacing:0.04em;">${formatDateRange(j.dateFrom, j.dateTo) || ''}</div>
     </div>
-    <div class="tc-body">
-      <div class="tc-stamp"><div class="score">${stampScore(j)}</div><div class="of">OUT OF 5</div></div>
-      <div class="tc-ratings">
-        <div class="tc-rating-row"><span class="lbl">Service</span><span class="val">${starsHtml(j.service)}</span></div>
-        <div class="tc-rating-row"><span class="lbl">Seat</span><span class="val">${starsHtml(j.seat)}</span></div>
-        <div class="tc-rating-row"><span class="lbl">Dining</span><span class="val">${starsHtml(j.dining)}</span></div>
-      </div>
-    </div>
-    <div class="tc-meta">
-      ${j.lounge ? `<span>Lounge — <b>${j.lounge}</b></span>` : ''}
-      <span>Sleep — <b>${j.sleep}</b></span>
-    </div>
-    <div class="tc-cost">
-      <div class="points">${j.points !== '—' ? j.points + ' points' : 'Cash fare'}</div>
-      <div class="taxes">${j.cash !== '—' ? j.cash + ' taxes & fees' : ''}</div>
-    </div>
-    ${j.notes ? `<div class="tc-notes">"${j.notes}"</div>` : ''}
-    ${photoBlock}
   `;
 
   if(animate){
@@ -2100,29 +1772,18 @@ function renderCard(j, animate){
 
 async function saveJourneyAndReturn(){
   if(viewingSaved === null){
-    const origin = document.getElementById('f-origin').value || 'Sydney';
-    const destination = document.getElementById('f-destination').value || 'Singapore';
-    const date = document.getElementById('f-date').value;
-    const month = date ? new Date(date+'T00:00:00').toLocaleDateString('en-US',{month:'long', year:'numeric'}) : 'December 2026';
+    const title = document.getElementById('f-title').value.trim() || 'Untitled Journey';
+    const description = document.getElementById('f-description').value.trim();
+    const dateFrom = document.getElementById('f-date-from').value;
+    const dateTo = document.getElementById('f-date-to').value;
+    const cities = getCitiesFromForm();
 
     const journey = {
-      city: destination.toUpperCase(),
-      origin, destination,
-      airline: document.getElementById('f-airline').value || 'Qantas',
-      flightno: document.getElementById('f-flightno').value || 'QF5',
-      cabin: document.getElementById('f-cabin').value,
-      month, date,
-      service: state.draft.service || 4,
-      seat: state.draft.seat || 4,
-      dining: state.draft.dining || 4,
-      sleep: state.draft.sleep,
-      points: document.getElementById('f-points').value || '—',
-      cash: document.getElementById('f-cash').value || '—',
-      lounge: document.getElementById('f-lounge').value,
-      meal: document.getElementById('f-meal').value,
-      companions: document.getElementById('f-companions').value,
-      notes: document.getElementById('f-notes').value,
-      photo: state.draft.photo
+      title, description,
+      city: title.toUpperCase(),
+      origin: cities[0] || '', destination: cities[cities.length - 1] || '', cities,
+      dateFrom, dateTo,
+      month: monthYear(dateFrom) || ''
     };
 
     if (sb && currentUser) {
@@ -2141,22 +1802,16 @@ async function saveJourneyAndReturn(){
 }
 
 function resetForm(){
-  ['f-origin','f-destination','f-date','f-airline','f-flightno','f-seat','f-aircraft','f-points','f-cash','f-lounge','f-meal','f-companions','f-notes'].forEach(id=>{
+  ['f-title','f-description','f-date-from','f-date-to'].forEach(id=>{
     document.getElementById(id).value = '';
   });
-  state.draft = { service:4, seat:4, dining:4, sleep:'Good', photo:null };
-  document.querySelectorAll('.stars').forEach(el=> paintStars(el, 4));
-  document.querySelectorAll('#f-sleep-group .tone-opt').forEach(o=>o.classList.remove('selected'));
-  document.querySelector('#f-sleep-group .tone-opt[data-val="Good"]').classList.add('selected');
-  const well = document.getElementById('photo-well');
-  const img = well.querySelector('img');
-  if(img) img.remove();
-  well.querySelector('.hint').style.display='block';
-  well.querySelector('svg').style.display='block';
+  document.getElementById('cities-edit-list').innerHTML = '';
+  addCityRow();
 }
 
 /* init */
 renderJourneyList();
+addCityRow(); // seed Step 1's cities table with one empty row to start
 
 /* PWA: register service worker (only works when served over http/https, not file://) */
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
