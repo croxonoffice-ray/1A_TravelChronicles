@@ -373,6 +373,37 @@ a{color:inherit;}
   padding:60px 20px;
 }
 .page-placeholder svg{ width:34px; height:34px; color:var(--gold); margin-bottom:18px; }
+
+.stars{ display:flex; gap:6px; margin-top:2px; }
+.star-btn{
+  background:none; border:none; padding:2px;
+  color:var(--paper-line);
+  cursor:pointer;
+  transition:color .15s var(--ease), transform .15s var(--ease);
+}
+.star-btn svg{ width:22px; height:22px; }
+.star-btn.filled{ color:var(--gold); }
+.star-btn:hover{ transform:scale(1.12); }
+
+.photo-well{
+  flex:1;
+  border:1px dashed var(--paper-line);
+  padding:22px;
+  text-align:center;
+  cursor:pointer;
+  transition:border-color .2s var(--ease);
+  position:relative;
+  overflow:hidden;
+  min-height:110px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+}
+.photo-well:hover{ border-color:var(--gold-dim); }
+.photo-well svg{ width:20px; height:20px; color:var(--gold); margin-bottom:8px; }
+.photo-well .hint{ font-size:12px; color:var(--ink-soft); }
+.photo-well img{
+  position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+}
+.photo-well input{ display:none; }
 .page-placeholder h3{ font-size:24px; color:var(--navy); margin-bottom:10px; }
 .page-placeholder p{ font-size:14px; color:var(--ink-soft); max-width:40ch; margin:0 auto; line-height:1.6; }
 
@@ -1253,7 +1284,10 @@ const state = {
     {
       title:"Singapore Business Trip", description:"A short business trip via Singapore.",
       city:"SINGAPORE BUSINESS TRIP", origin:"Sydney", destination:"Singapore", cities:["Sydney","Singapore"],
-      dateFrom:"2026-12-05", dateTo:"2026-12-05", month:"December 2026"
+      dateFrom:"2026-12-05", dateTo:"2026-12-05", month:"December 2026",
+      loungeVisits:[
+        { airport:"SYD", name:"Qantas First Lounge", foodDrinkRating:5, comfortRating:4, comments:"Excellent champagne selection and quiet shower suites.", photos:[] }
+      ]
     },
     {
       title:"London via Singapore", description:"Onward leg from Singapore to London.",
@@ -1403,7 +1437,7 @@ async function loadJourneysFromDb(){
   if (!sb || !currentUser) return;
   const { data, error } = await sb
     .from('journeys')
-    .select('*, journey_cities(city_name, sort_order)')
+    .select('*, journey_cities(city_name, sort_order), lounge_visits(*, lounge_visit_photos(storage_path, sort_order))')
     .eq('traveler_id', currentUser.id)
     .order('created_at', { ascending: false });
   if (error) { console.error(error); return; }
@@ -1415,6 +1449,22 @@ function rowToJourney(row){
     .slice()
     .sort((a, b) => a.sort_order - b.sort_order)
     .map(c => c.city_name);
+
+  const loungeVisits = (row.lounge_visits || [])
+    .slice()
+    .sort((a, b) => a.sort_order - b.sort_order)
+    .map(lv => ({
+      airport: lv.airport || '',
+      name: lv.name || '',
+      foodDrinkRating: lv.food_drink_rating,
+      comfortRating: lv.comfort_rating,
+      comments: lv.comments || '',
+      photos: (lv.lounge_visit_photos || [])
+        .slice()
+        .sort((a, b) => a.sort_order - b.sort_order)
+        .map(p => sb.storage.from('lounge-photos').getPublicUrl(p.storage_path).data.publicUrl)
+    }));
+
   return {
     id: row.id,
     title: row.title || 'Untitled Journey',
@@ -1422,7 +1472,8 @@ function rowToJourney(row){
     city: (row.title || '').toUpperCase(),
     origin: cities[0] || '', destination: cities[cities.length - 1] || '', cities,
     dateFrom: row.date_from, dateTo: row.date_to,
-    month: monthYear(row.date_from)
+    month: monthYear(row.date_from),
+    loungeVisits
   };
 }
 
@@ -1926,23 +1977,162 @@ function toggleTemplatePicker(){
   picker.style.display = picker.style.display === 'none' ? 'block' : 'none';
 }
 
-function addJournalPage(type){
+function addJournalPage(type, prefill){
   const tpl = PAGE_TEMPLATES[type];
   const idx = journalPages.length;
-  journalPages.push({ type, label: tpl.label });
 
   const pageEl = document.createElement('div');
   pageEl.className = 'journal-page';
-  pageEl.innerHTML = `
-    <div class="page-placeholder">
-      ${tpl.icon}
-      <h3>${tpl.label}</h3>
-      <p>${tpl.text}</p>
-    </div>
-  `;
+
+  if (type === 'lounge') {
+    pageEl.appendChild(buildLoungePageContent(prefill));
+  } else {
+    pageEl.innerHTML = `
+      <div class="page-placeholder">
+        ${tpl.icon}
+        <h3>${tpl.label}</h3>
+        <p>${tpl.text}</p>
+      </div>
+    `;
+  }
+
   document.getElementById('additional-pages').appendChild(pageEl);
+  journalPages.push({ type, label: tpl.label, el: pageEl });
   document.getElementById('template-picker').style.display = 'none';
   showPage(idx);
+}
+
+/* ---- Star rating widget (self-contained per instance — the rating is
+   stored directly on the container's dataset, so any number of these can
+   exist on the page at once without colliding, e.g. multiple Lounge pages) ---- */
+const starSvg = (filled) => `<svg viewBox="0 0 24 24" fill="${filled ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="1"><path d="M12 3l2.6 5.7 6.2.6-4.7 4.2 1.4 6.1L12 16.6 6.5 19.6l1.4-6.1L3.2 9.3l6.2-.6z"/></svg>`;
+
+function buildStarInput(container){
+  container.innerHTML = '';
+  container.dataset.value = '0';
+  for (let i = 1; i <= 5; i++) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'star-btn';
+    b.innerHTML = starSvg(false);
+    b.addEventListener('click', () => {
+      container.dataset.value = String(i);
+      paintStars(container, i);
+    });
+    container.appendChild(b);
+  }
+}
+function paintStars(container, val){
+  [...container.children].forEach((b, idx) => {
+    const filled = idx < val;
+    b.classList.toggle('filled', filled);
+    b.innerHTML = starSvg(filled);
+  });
+}
+
+/* ---- Lounge page: airport, name, two star ratings, comments, up to 2 photos ---- */
+function buildLoungePageContent(prefill){
+  prefill = prefill || {};
+  const wrap = document.createElement('div');
+  wrap.innerHTML = `
+    <div class="form-head" style="text-align:left; padding-top:0; padding-bottom:20px;">
+      <div class="eyebrow">Lounge Visit</div>
+      <h2 style="font-size:26px;">Tell us about the lounge</h2>
+    </div>
+    <div class="field-grid">
+      <div class="field"><label>Airport</label><input type="text" class="lounge-airport" placeholder="e.g. SYD" /></div>
+      <div class="field"><label>Lounge name</label><input type="text" class="lounge-name" placeholder="e.g. Qantas First Lounge" /></div>
+    </div>
+    <div class="field-grid">
+      <div class="field"><label>Food &amp; drink</label><div class="stars lounge-food-stars"></div></div>
+      <div class="field"><label>Comfort</label><div class="stars lounge-comfort-stars"></div></div>
+    </div>
+    <div class="field span-2">
+      <label>Comments</label>
+      <textarea class="lounge-comments" placeholder="What made this lounge memorable?" style="min-height:70px;"></textarea>
+    </div>
+    <div class="field span-2">
+      <label>Photos (up to 2)</label>
+      <div style="display:flex; gap:16px;">
+        <label class="photo-well lounge-photo-well" data-slot="0">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="5" width="18" height="14" rx="1"/><circle cx="9" cy="10" r="1.6"/><path d="M21 17l-6-5-4 3.5-3-2L3 17"/></svg>
+          <div class="hint">Add photo</div>
+          <input type="file" accept="image/*" class="lounge-photo-input" data-slot="0" />
+        </label>
+        <label class="photo-well lounge-photo-well" data-slot="1">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="5" width="18" height="14" rx="1"/><circle cx="9" cy="10" r="1.6"/><path d="M21 17l-6-5-4 3.5-3-2L3 17"/></svg>
+          <div class="hint">Add photo</div>
+          <input type="file" accept="image/*" class="lounge-photo-input" data-slot="1" />
+        </label>
+      </div>
+    </div>
+  `;
+
+  buildStarInput(wrap.querySelector('.lounge-food-stars'));
+  buildStarInput(wrap.querySelector('.lounge-comfort-stars'));
+
+  wrap.querySelector('.lounge-airport').value = prefill.airport || '';
+  wrap.querySelector('.lounge-name').value = prefill.name || '';
+  wrap.querySelector('.lounge-comments').value = prefill.comments || '';
+  if (prefill.foodDrinkRating) {
+    const c = wrap.querySelector('.lounge-food-stars');
+    c.dataset.value = String(prefill.foodDrinkRating);
+    paintStars(c, prefill.foodDrinkRating);
+  }
+  if (prefill.comfortRating) {
+    const c = wrap.querySelector('.lounge-comfort-stars');
+    c.dataset.value = String(prefill.comfortRating);
+    paintStars(c, prefill.comfortRating);
+  }
+
+  wrap.querySelectorAll('.lounge-photo-input').forEach(input => {
+    input.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const well = input.closest('.photo-well');
+        well.dataset.photo = ev.target.result;
+        well.querySelector('.hint').style.display = 'none';
+        well.querySelector('svg').style.display = 'none';
+        let img = well.querySelector('img');
+        if (!img) { img = document.createElement('img'); well.appendChild(img); }
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  });
+
+  (prefill.photos || []).forEach((url, idx) => {
+    const well = wrap.querySelectorAll('.lounge-photo-well')[idx];
+    if (!well || !url) return;
+    well.dataset.photo = url;
+    well.querySelector('.hint').style.display = 'none';
+    well.querySelector('svg').style.display = 'none';
+    const img = document.createElement('img');
+    img.src = url;
+    well.appendChild(img);
+  });
+
+  return wrap;
+}
+
+// Reads every Lounge page currently in the journal into plain data objects,
+// ready to persist (or to keep in-memory in demo mode).
+function gatherLoungePagesData(){
+  return journalPages
+    .filter(p => p.type === 'lounge')
+    .map(p => {
+      const el = p.el;
+      return {
+        airport: el.querySelector('.lounge-airport').value.trim(),
+        name: el.querySelector('.lounge-name').value.trim(),
+        foodDrinkRating: parseInt(el.querySelector('.lounge-food-stars').dataset.value || '0', 10) || null,
+        comfortRating: parseInt(el.querySelector('.lounge-comfort-stars').dataset.value || '0', 10) || null,
+        comments: el.querySelector('.lounge-comments').value.trim(),
+        photos: [...el.querySelectorAll('.lounge-photo-well')].map(w => w.dataset.photo || null).filter(Boolean)
+      };
+    });
 }
 
 function exitJournal(){
@@ -1967,7 +2157,9 @@ function startNewJourney(){
 function editJourneyDetails(){
   if (viewingSaved !== null) {
     resetJournalPages();
-    populateTripBasicsForm(state.journeys[viewingSaved]);
+    const j = state.journeys[viewingSaved];
+    populateTripBasicsForm(j);
+    (j.loungeVisits || []).forEach(lv => addJournalPage('lounge', lv));
   }
   goTo('view-trip-basics');
 }
@@ -2057,19 +2249,53 @@ async function updateJourney(id, journey){
   }
 }
 
+// Replaces all lounge visits for a journey with the current set from the
+// journal pages — same "replace, don't diff" approach as cities above.
+async function persistLoungeVisits(journeyId, loungeVisits){
+  await sb.from('lounge_visits').delete().eq('journey_id', journeyId);
+
+  for (let i = 0; i < loungeVisits.length; i++) {
+    const lv = loungeVisits[i];
+    const { data, error } = await sb.from('lounge_visits').insert({
+      journey_id: journeyId,
+      airport: lv.airport || null,
+      name: lv.name || null,
+      food_drink_rating: lv.foodDrinkRating,
+      comfort_rating: lv.comfortRating,
+      comments: lv.comments || null,
+      sort_order: i
+    }).select().single();
+
+    if (error) { console.error(error); continue; }
+
+    for (let s = 0; s < lv.photos.length; s++) {
+      try {
+        const blob = await (await fetch(lv.photos[s])).blob();
+        const path = `${currentUser.id}/${data.id}/${s}.jpg`;
+        const { error: upErr } = await sb.storage.from('lounge-photos').upload(path, blob, { upsert: true, contentType: blob.type });
+        if (!upErr) {
+          await sb.from('lounge_visit_photos').insert({ lounge_visit_id: data.id, storage_path: path, sort_order: s });
+        }
+      } catch (e) { console.error(e); }
+    }
+  }
+}
+
 async function saveJourneyAndReturn(){
   const title = document.getElementById('f-title').value.trim() || 'Untitled Journey';
   const description = document.getElementById('f-description').value.trim();
   const dateFrom = document.getElementById('f-date-from').value;
   const dateTo = document.getElementById('f-date-to').value;
   const cities = getCitiesFromForm();
+  const loungeVisits = gatherLoungePagesData();
 
   const journey = {
     title, description,
     city: title.toUpperCase(),
     origin: cities[0] || '', destination: cities[cities.length - 1] || '', cities,
     dateFrom, dateTo,
-    month: monthYear(dateFrom) || ''
+    month: monthYear(dateFrom) || '',
+    loungeVisits
   };
 
   const saveBtn = document.querySelector('.card-actions .btn-solid');
@@ -2078,7 +2304,8 @@ async function saveJourneyAndReturn(){
     // Creating a brand new journey.
     if (sb && currentUser) {
       if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Saving…'; }
-      await persistJourney(journey);
+      const newId = await persistJourney(journey);
+      if (newId) await persistLoungeVisits(newId, loungeVisits);
       await loadJourneysFromDb();
       if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Save to travel log'; }
     } else {
@@ -2090,6 +2317,7 @@ async function saveJourneyAndReturn(){
     if (sb && currentUser && existing && existing.id) {
       if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Saving…'; }
       await updateJourney(existing.id, journey);
+      await persistLoungeVisits(existing.id, loungeVisits);
       await loadJourneysFromDb();
       if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Save to travel log'; }
     } else if (existing) {
