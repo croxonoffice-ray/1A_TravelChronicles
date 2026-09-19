@@ -309,6 +309,72 @@ a{color:inherit;}
 .ffp-remove-btn:hover{ color:#B00020; }
 .ffp-remove-btn svg{ width:16px; height:16px; }
 
+/* ============ COMMENTS ============ */
+.comment-form{
+  border:1px solid var(--paper-line);
+  padding:26px;
+  margin-bottom:40px;
+  background:#fff;
+}
+.comment-form textarea{
+  width:100%;
+  border:none;
+  border-bottom:1px solid var(--paper-line);
+  background:transparent;
+  padding:8px 2px 12px;
+  font-size:16px;
+  font-family:'Cormorant', serif;
+  color:var(--navy);
+  resize:vertical;
+  min-height:90px;
+  line-height:1.6;
+}
+.comment-form textarea:focus{ outline:none; border-bottom-color:var(--gold); }
+.share-name-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin:16px 0 20px;
+}
+.share-name-row input[type=checkbox]{
+  width:16px; height:16px;
+  accent-color:var(--gold);
+  cursor:pointer;
+}
+.share-name-row label{
+  font-size:13px;
+  color:var(--ink-soft);
+  cursor:pointer;
+}
+.comment-row{
+  padding:22px 0;
+  border-bottom:1px solid var(--paper-line);
+}
+.comment-row:first-child{ padding-top:0; }
+.comment-row:last-child{ border-bottom:none; }
+.comment-meta{
+  display:flex;
+  justify-content:space-between;
+  align-items:baseline;
+  margin-bottom:8px;
+}
+.comment-author{
+  font-family:'Cormorant', serif;
+  font-size:16px;
+  font-weight:600;
+  color:var(--navy);
+}
+.comment-date{
+  font-size:11px;
+  color:var(--ink-soft);
+}
+.comment-text{
+  font-size:15px;
+  line-height:1.7;
+  color:var(--ink);
+}
+
+
 .icon-btn{
   background:none; border:none; color:var(--ivory); opacity:0.75;
   display:flex; align-items:center; justify-content:center;
@@ -803,6 +869,7 @@ a{color:inherit;}
         <a href="#" class="tab-link" onclick="goTo('view-journeys'); return false;">Journeys</a>
         <a href="#" class="tab-link" onclick="goTo('view-companions'); return false;">Companions</a>
         <a href="#" class="tab-link" onclick="goTo('view-about'); return false;">About</a>
+        <a href="#" class="tab-link" onclick="goTo('view-comments'); return false;">Comments</a>
         <a href="#" class="tab-link" onclick="goTo('view-profile'); return false;">Profile</a>
       </div>
     </nav>
@@ -879,6 +946,7 @@ a{color:inherit;}
         <a href="#" class="tab-link active" onclick="return false;">Journeys</a>
         <a href="#" class="tab-link" onclick="goTo('view-companions'); return false;">Companions</a>
         <a href="#" class="tab-link" onclick="goTo('view-about'); return false;">About</a>
+        <a href="#" class="tab-link" onclick="goTo('view-comments'); return false;">Comments</a>
         <a href="#" class="tab-link" onclick="goTo('view-profile'); return false;">Profile</a>
       </div>
     </nav>
@@ -922,6 +990,7 @@ a{color:inherit;}
         <a href="#" class="tab-link" onclick="goTo('view-journeys'); return false;">Journeys</a>
         <a href="#" class="tab-link active" onclick="return false;">Companions</a>
         <a href="#" class="tab-link" onclick="goTo('view-about'); return false;">About</a>
+        <a href="#" class="tab-link" onclick="goTo('view-comments'); return false;">Comments</a>
         <a href="#" class="tab-link" onclick="goTo('view-profile'); return false;">Profile</a>
       </div>
     </nav>
@@ -966,6 +1035,7 @@ a{color:inherit;}
         <a href="#" class="tab-link" onclick="goTo('view-journeys'); return false;">Journeys</a>
         <a href="#" class="tab-link" onclick="goTo('view-companions'); return false;">Companions</a>
         <a href="#" class="tab-link" onclick="goTo('view-about'); return false;">About</a>
+        <a href="#" class="tab-link" onclick="goTo('view-comments'); return false;">Comments</a>
         <a href="#" class="tab-link" onclick="goTo('view-profile'); return false;">Profile</a>
       </div>
     </nav>
@@ -994,6 +1064,59 @@ a{color:inherit;}
     </div>
   </section>
 
+  <!-- ============ COMMENTS ============ -->
+  <section id="view-comments" class="view">
+    <header class="app-header">
+      <div class="mark">
+        <img src="icon-192.png" alt="1A Travel Collection" style="width:26px; height:26px; border-radius:50%; display:block;" />
+        <div>
+          <div class="masthead">1A TRAVEL COLLECTION</div>
+          <h2 class="greeting-echo">My Travel Log</h2>
+        </div>
+      </div>
+      <div class="header-actions">
+        <span class="year">2026</span>
+        <button class="icon-btn" onclick="signOut()" title="Sign out" style="display:flex;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M15 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9M10 12h11M17 8l4 4-4 4"/></svg>
+        </button>
+        <button class="btn" onclick="goTo('view-trip-basics')">+ New journey</button>
+      </div>
+    </header>
+
+    <nav class="tab-bar" aria-label="Main">
+      <div class="tab-bar-inner">
+        <a href="#" class="tab-link" onclick="goTo('view-home'); return false;">Home</a>
+        <a href="#" class="tab-link" onclick="goTo('view-journeys'); return false;">Journeys</a>
+        <a href="#" class="tab-link" onclick="goTo('view-companions'); return false;">Companions</a>
+        <a href="#" class="tab-link" onclick="goTo('view-about'); return false;">About</a>
+        <a href="#" class="tab-link active" onclick="return false;">Comments</a>
+        <a href="#" class="tab-link" onclick="goTo('view-profile'); return false;">Profile</a>
+      </div>
+    </nav>
+
+    <div class="home-inner" style="max-width:680px;">
+      <div class="section-title">
+        <h3>Comments</h3>
+        <span class="count"><span id="comment-count">0</span> shared</span>
+      </div>
+
+      <div class="comment-form">
+        <label style="display:block; font-size:11px; letter-spacing:0.08em; color:var(--ink-soft); margin-bottom:9px;">Your comment</label>
+        <textarea id="comment-text" placeholder="Share a thought, a tip, or a story from your travels..."></textarea>
+        <div class="share-name-row">
+          <input type="checkbox" id="comment-share-name" checked />
+          <label for="comment-share-name">Share my name with this comment</label>
+        </div>
+        <button class="btn btn-solid" onclick="submitComment()">Post comment</button>
+      </div>
+
+      <div id="comment-list"></div>
+      <p id="comment-empty" style="display:none; font-size:14px; color:var(--ink-soft); padding:14px 0;">
+        No comments yet — be the first to share one.
+      </p>
+    </div>
+  </section>
+
   <!-- ============ PROFILE ============ -->
   <section id="view-profile" class="view">
     <header class="app-header">
@@ -1019,6 +1142,7 @@ a{color:inherit;}
         <a href="#" class="tab-link" onclick="goTo('view-journeys'); return false;">Journeys</a>
         <a href="#" class="tab-link" onclick="goTo('view-companions'); return false;">Companions</a>
         <a href="#" class="tab-link" onclick="goTo('view-about'); return false;">About</a>
+        <a href="#" class="tab-link" onclick="goTo('view-comments'); return false;">Comments</a>
         <a href="#" class="tab-link active" onclick="return false;">Profile</a>
       </div>
     </nav>
@@ -1261,7 +1385,11 @@ const state = {
   profile: {
     firstName: '', lastName: '', homeCity: '', email: '', dateJoined: null,
     programs: []
-  }
+  },
+  comments: [
+    { author: 'Priya Sharma', anonymous: false, text: 'The Qantas First lounge in Sydney is worth arriving two hours early for — best shower suites of any lounge I\'ve used in the region.', date: '2026-09-01T00:00:00.000Z' },
+    { author: null, anonymous: true, text: 'Booked a reward seat on points for the first time this year. Wish I\'d started doing this a decade ago.', date: '2026-08-14T00:00:00.000Z' }
+  ]
 };
 
 /* ============================================================
@@ -1387,6 +1515,7 @@ async function enterApp(){
   if (state.profile.firstName) {
     setGreeting(`Welcome ${state.profile.firstName}`);
   }
+  await loadCommentsFromDb();
   goTo('view-home');
 }
 
@@ -1608,6 +1737,80 @@ async function saveProfile(){
   document.getElementById('profile-view-mode').style.display = 'block';
 }
 
+/* ============ COMMENTS ============ */
+async function loadCommentsFromDb(){
+  if (sb && currentUser) {
+    const { data, error } = await sb
+      .from('comments')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (!error && data) {
+      state.comments = data.map(row => ({
+        author: row.display_name,
+        anonymous: !row.display_name,
+        text: row.comment_text,
+        date: row.created_at
+      }));
+    }
+  }
+  renderComments();
+}
+
+function renderComments(){
+  const list = document.getElementById('comment-list');
+  const empty = document.getElementById('comment-empty');
+  if (!list) return;
+  list.innerHTML = '';
+  document.getElementById('comment-count').textContent = state.comments.length;
+
+  if (state.comments.length === 0) {
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  state.comments.forEach(c => {
+    const row = document.createElement('div');
+    row.className = 'comment-row';
+    const dateStr = c.date ? new Date(c.date).toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' }) : '';
+    row.innerHTML = `
+      <div class="comment-meta">
+        <span class="comment-author">${c.anonymous ? 'Anonymous traveler' : (c.author || 'Anonymous traveler')}</span>
+        <span class="comment-date">${dateStr}</span>
+      </div>
+      <div class="comment-text">${c.text}</div>
+    `;
+    list.appendChild(row);
+  });
+}
+
+async function submitComment(){
+  const textEl = document.getElementById('comment-text');
+  const text = textEl.value.trim();
+  if (!text) return;
+
+  const shareName = document.getElementById('comment-share-name').checked;
+  const fullName = [state.profile.firstName, state.profile.lastName].filter(Boolean).join(' ');
+  const author = shareName && fullName ? fullName : null;
+
+  const newComment = { author, anonymous: !author, text, date: new Date().toISOString() };
+
+  if (sb && currentUser) {
+    const { error } = await sb.from('comments').insert({
+      traveler_id: currentUser.id,
+      display_name: author,
+      comment_text: text
+    });
+    if (error) { console.error(error); alert('Could not post comment: ' + error.message); return; }
+    await loadCommentsFromDb();
+  } else {
+    state.comments.unshift(newComment);
+    renderComments();
+  }
+
+  textEl.value = '';
+}
+
 /* ============ NAVIGATION ============ */
 function goTo(id){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
@@ -1636,6 +1839,7 @@ function beginJournal(){
     ]
   };
   renderProfileReadOnly();
+  renderComments();
 
   renderJourneyList();
   goTo('view-home');
