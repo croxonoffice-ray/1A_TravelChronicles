@@ -718,7 +718,7 @@ a{color:inherit;}
         <button class="icon-btn" id="btn-signout" onclick="signOut()" title="Sign out" style="display:none;">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M15 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9M10 12h11M17 8l4 4-4 4"/></svg>
         </button>
-        <button class="btn" onclick="goTo('view-trip-basics')">+ New journey</button>
+        <button class="btn" onclick="startNewJourney()">+ New journey</button>
       </div>
     </header>
 
@@ -795,7 +795,7 @@ a{color:inherit;}
         <button class="icon-btn" onclick="signOut()" title="Sign out" style="display:flex;">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M15 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9M10 12h11M17 8l4 4-4 4"/></svg>
         </button>
-        <button class="btn" onclick="goTo('view-trip-basics')">+ New journey</button>
+        <button class="btn" onclick="startNewJourney()">+ New journey</button>
       </div>
     </header>
 
@@ -819,7 +819,7 @@ a{color:inherit;}
       <div class="journeys" id="journey-list-full"></div>
 
       <div class="new-journey-cta">
-        <button class="btn btn-ghost" onclick="goTo('view-trip-basics')">Record another journey →</button>
+        <button class="btn btn-ghost" onclick="startNewJourney()">Record another journey →</button>
       </div>
     </div>
   </section>
@@ -839,7 +839,7 @@ a{color:inherit;}
         <button class="icon-btn" onclick="signOut()" title="Sign out" style="display:flex;">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M15 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9M10 12h11M17 8l4 4-4 4"/></svg>
         </button>
-        <button class="btn" onclick="goTo('view-trip-basics')">+ New journey</button>
+        <button class="btn" onclick="startNewJourney()">+ New journey</button>
       </div>
     </header>
 
@@ -884,7 +884,7 @@ a{color:inherit;}
         <button class="icon-btn" onclick="signOut()" title="Sign out" style="display:flex;">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M15 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9M10 12h11M17 8l4 4-4 4"/></svg>
         </button>
-        <button class="btn" onclick="goTo('view-trip-basics')">+ New journey</button>
+        <button class="btn" onclick="startNewJourney()">+ New journey</button>
       </div>
     </header>
 
@@ -938,7 +938,7 @@ a{color:inherit;}
         <button class="icon-btn" onclick="signOut()" title="Sign out" style="display:flex;">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M15 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9M10 12h11M17 8l4 4-4 4"/></svg>
         </button>
-        <button class="btn" onclick="goTo('view-trip-basics')">+ New journey</button>
+        <button class="btn" onclick="startNewJourney()">+ New journey</button>
       </div>
     </header>
 
@@ -991,7 +991,7 @@ a{color:inherit;}
         <button class="icon-btn" onclick="signOut()" title="Sign out" style="display:flex;">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M15 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9M10 12h11M17 8l4 4-4 4"/></svg>
         </button>
-        <button class="btn" onclick="goTo('view-trip-basics')">+ New journey</button>
+        <button class="btn" onclick="startNewJourney()">+ New journey</button>
       </div>
     </header>
 
@@ -1112,7 +1112,7 @@ a{color:inherit;}
         <div class="card-preface">YOUR JOURNEY, RECORDED</div>
         <div class="travel-card" id="travel-card"></div>
         <div class="card-actions">
-          <button class="btn btn-ghost" style="color:var(--gold-bright)" onclick="goTo('view-trip-basics')">Edit details</button>
+          <button class="btn btn-ghost" style="color:var(--gold-bright)" onclick="editJourneyDetails()">Edit details</button>
           <button class="btn btn-solid" onclick="saveJourneyAndReturn()">Save to travel log</button>
         </div>
       </div>
@@ -1721,6 +1721,38 @@ function abbr(city){
 /* ============ CARD CREATION ============ */
 let viewingSaved = null;
 
+// Called by every "+ New journey" entry point — makes sure we're not
+// accidentally carrying over the ID of a journey someone was just editing.
+function startNewJourney(){
+  viewingSaved = null;
+  resetForm();
+  goTo('view-trip-basics');
+}
+
+// Called by "Edit details" on an existing journey's card — fills the Trip
+// Basics form with that journey's actual data. Without this, the form was
+// simply blank because navigating to it never read anything back in.
+function editJourneyDetails(){
+  if (viewingSaved !== null) {
+    populateTripBasicsForm(state.journeys[viewingSaved]);
+  }
+  goTo('view-trip-basics');
+}
+
+function populateTripBasicsForm(j){
+  document.getElementById('f-title').value = j.title || '';
+  document.getElementById('f-description').value = j.description || '';
+  document.getElementById('f-date-from').value = j.dateFrom || '';
+  document.getElementById('f-date-to').value = j.dateTo || '';
+  document.getElementById('cities-edit-list').innerHTML = '';
+  const cities = (j.cities && j.cities.length) ? j.cities : [j.origin, j.destination].filter(Boolean);
+  if (cities.length) {
+    cities.forEach(c => addCityRow(c));
+  } else {
+    addCityRow();
+  }
+}
+
 function createTravelCard(){
   const title = document.getElementById('f-title').value.trim() || 'Untitled Journey';
   const description = document.getElementById('f-description').value.trim();
@@ -1736,7 +1768,9 @@ function createTravelCard(){
     month: monthYear(dateFrom) || ''
   };
 
-  viewingSaved = null;
+  // Note: viewingSaved is deliberately left as-is here (not reset to null) —
+  // if we got here via "Edit details" on an existing journey, we need to
+  // remember which one so Save updates it instead of creating a duplicate.
   renderCard(journey, true);
   goTo('view-card-reveal');
 }
@@ -1770,24 +1804,46 @@ function renderCard(j, animate){
   }
 }
 
+async function updateJourney(id, journey){
+  const { error } = await sb.from('journeys').update({
+    title: journey.title,
+    description: journey.description || null,
+    date_from: journey.dateFrom || null,
+    date_to: journey.dateTo || null
+  }).eq('id', id);
+
+  if (error) { console.error(error); alert('Could not update journey: ' + error.message); return; }
+
+  // Simplest correct approach for a short list: replace all city rows
+  // rather than diffing individual adds/edits/removes/reorders.
+  await sb.from('journey_cities').delete().eq('journey_id', id);
+  if (journey.cities && journey.cities.length) {
+    await sb.from('journey_cities').insert(
+      journey.cities.map((city, idx) => ({ journey_id: id, city_name: city, sort_order: idx }))
+    );
+  }
+}
+
 async function saveJourneyAndReturn(){
-  if(viewingSaved === null){
-    const title = document.getElementById('f-title').value.trim() || 'Untitled Journey';
-    const description = document.getElementById('f-description').value.trim();
-    const dateFrom = document.getElementById('f-date-from').value;
-    const dateTo = document.getElementById('f-date-to').value;
-    const cities = getCitiesFromForm();
+  const title = document.getElementById('f-title').value.trim() || 'Untitled Journey';
+  const description = document.getElementById('f-description').value.trim();
+  const dateFrom = document.getElementById('f-date-from').value;
+  const dateTo = document.getElementById('f-date-to').value;
+  const cities = getCitiesFromForm();
 
-    const journey = {
-      title, description,
-      city: title.toUpperCase(),
-      origin: cities[0] || '', destination: cities[cities.length - 1] || '', cities,
-      dateFrom, dateTo,
-      month: monthYear(dateFrom) || ''
-    };
+  const journey = {
+    title, description,
+    city: title.toUpperCase(),
+    origin: cities[0] || '', destination: cities[cities.length - 1] || '', cities,
+    dateFrom, dateTo,
+    month: monthYear(dateFrom) || ''
+  };
 
+  const saveBtn = document.querySelector('.card-actions .btn-solid');
+
+  if (viewingSaved === null) {
+    // Creating a brand new journey.
     if (sb && currentUser) {
-      const saveBtn = document.querySelector('.card-actions .btn-solid');
       if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Saving…'; }
       await persistJourney(journey);
       await loadJourneysFromDb();
@@ -1795,8 +1851,21 @@ async function saveJourneyAndReturn(){
     } else {
       state.journeys.unshift(journey);
     }
-    resetForm();
+  } else {
+    // Updating a journey that already exists.
+    const existing = state.journeys[viewingSaved];
+    if (sb && currentUser && existing && existing.id) {
+      if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Saving…'; }
+      await updateJourney(existing.id, journey);
+      await loadJourneysFromDb();
+      if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Save to travel log'; }
+    } else if (existing) {
+      state.journeys[viewingSaved] = { ...existing, ...journey, id: existing.id };
+    }
   }
+
+  resetForm();
+  viewingSaved = null;
   renderJourneyList();
   goTo('view-home');
 }
