@@ -316,6 +316,93 @@ a{color:inherit;}
 }
 .city-row:first-child{ padding-top:0; }
 
+/* ============ JOURNAL PAGE NAVIGATOR ============ */
+.page-navigator{
+  background:var(--ivory);
+  border-bottom:1px solid var(--paper-line);
+}
+.page-navigator-inner{
+  max-width:720px;
+  margin:0 auto;
+  padding:14px 40px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  overflow-x:auto;
+}
+.page-tab{
+  display:flex; align-items:center; gap:8px;
+  flex-shrink:0;
+  padding:8px 16px;
+  border:1px solid var(--paper-line);
+  background:#fff;
+  font-family:'Inter', sans-serif;
+  font-size:13px;
+  color:var(--ink-soft);
+  cursor:pointer;
+  white-space:nowrap;
+  transition:border-color .2s var(--ease), color .2s var(--ease);
+}
+.page-tab .page-num{
+  font-family:'EB Garamond', serif;
+  font-size:14px;
+  color:var(--gold);
+}
+.page-tab:hover{ border-color:var(--gold-dim); }
+.page-tab.active{
+  border-color:var(--navy);
+  color:var(--navy);
+  font-weight:500;
+}
+.page-tab-add{
+  flex-shrink:0;
+  width:34px; height:34px;
+  display:flex; align-items:center; justify-content:center;
+  border:1px dashed var(--paper-line);
+  color:var(--ink-soft);
+  cursor:pointer;
+  transition:border-color .2s var(--ease), color .2s var(--ease);
+}
+.page-tab-add:hover{ border-color:var(--gold); color:var(--gold); }
+
+.journal-page{ display:none; }
+.journal-page.active{ display:block; }
+
+.page-placeholder{
+  text-align:center;
+  padding:60px 20px;
+}
+.page-placeholder svg{ width:34px; height:34px; color:var(--gold); margin-bottom:18px; }
+.page-placeholder h3{ font-size:24px; color:var(--navy); margin-bottom:10px; }
+.page-placeholder p{ font-size:14px; color:var(--ink-soft); max-width:40ch; margin:0 auto; line-height:1.6; }
+
+.template-picker{
+  padding:20px 0 10px;
+}
+.template-picker h3{ font-size:18px; color:var(--navy); margin-bottom:18px; text-align:center; }
+.template-options{
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  gap:14px;
+}
+.template-option{
+  display:flex; flex-direction:column; align-items:center; gap:10px;
+  padding:22px 12px;
+  border:1px solid var(--paper-line);
+  background:#fff;
+  cursor:pointer;
+  transition:border-color .2s var(--ease), transform .2s var(--ease);
+}
+.template-option:hover{ border-color:var(--gold); transform:translateY(-2px); }
+.template-option svg{ width:24px; height:24px; color:var(--gold); }
+.template-option span{ font-family:'Inter', sans-serif; font-size:13px; color:var(--navy); }
+
+@media (max-width: 640px){
+  .page-navigator-inner{ padding:14px 20px; }
+  .template-options{ grid-template-columns:repeat(2, 1fr); }
+}
+
+
 
 /* ============ COMMENTS ============ */
 .comment-form{
@@ -1077,34 +1164,72 @@ a{color:inherit;}
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M6 6l12 12M18 6L6 18"/></svg>
       </button>
     </header>
+
+    <nav class="page-navigator" aria-label="Journal pages">
+      <div class="page-navigator-inner" id="page-navigator-inner"></div>
+    </nav>
+
     <div class="form-shell">
-      <div class="form-head">
-        <div class="eyebrow">Trip Basics</div>
-        <h2>Tell us about this journey</h2>
-        <p>The essentials — flights, hotels, and lounges attach to this trip later.</p>
+
+      <!-- Page 1: Journey Basics — always present, never rebuilt, so input is never lost -->
+      <div class="journal-page active" id="journal-page-0" data-page-type="basics">
+        <div class="form-head">
+          <div class="eyebrow">Trip Basics</div>
+          <h2>Tell us about this journey</h2>
+          <p>The essentials — flights, hotels, and lounges attach to this trip later.</p>
+        </div>
+
+        <div class="field-grid">
+          <div class="field span-2"><label>Journey title</label><input type="text" id="f-title" placeholder="e.g. Singapore Business Trip" /></div>
+          <div class="field span-2"><label>Description (optional)</label><textarea id="f-description" placeholder="A few words about this journey..." style="min-height:60px;"></textarea></div>
+          <div class="field"><label>Start date</label><input type="date" id="f-date-from" /></div>
+          <div class="field"><label>End date</label><input type="date" id="f-date-to" /></div>
+        </div>
+
+        <div class="field span-2" style="margin-top:8px;">
+          <label>Cities visited</label>
+          <div id="cities-edit-list"></div>
+          <button type="button" class="btn btn-ghost" style="margin-top:10px;" onclick="addCityRow()">+ Add city</button>
+        </div>
       </div>
 
-      <div class="field-grid">
-        <div class="field span-2"><label>Journey title</label><input type="text" id="f-title" placeholder="e.g. Singapore Business Trip" /></div>
-        <div class="field span-2"><label>Description (optional)</label><textarea id="f-description" placeholder="A few words about this journey..." style="min-height:60px;"></textarea></div>
-        <div class="field"><label>Start date</label><input type="date" id="f-date-from" /></div>
-        <div class="field"><label>End date</label><input type="date" id="f-date-to" /></div>
-      </div>
+      <!-- Additional pages (Lounge / Flight / Hotel / General placeholders) get appended here -->
+      <div id="additional-pages"></div>
 
-      <div class="field span-2" style="margin-top:8px;">
-        <label>Cities visited</label>
-        <div id="cities-edit-list"></div>
-        <button type="button" class="btn btn-ghost" style="margin-top:10px;" onclick="addCityRow()">+ Add city</button>
+      <!-- Template picker, shown when "+ Add Page" is clicked -->
+      <div class="template-picker" id="template-picker" style="display:none;">
+        <h3>Choose a page type</h3>
+        <div class="template-options">
+          <div class="template-option" onclick="addJournalPage('flight')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M2 16l7-1 4.5-8 2 .5-2 7.5 6-1 2 1.5-7 3-3 4-1.5-.5.5-3.5-6 1.5-.5-2z"/></svg>
+            <span>Flight</span>
+          </div>
+          <div class="template-option" onclick="addJournalPage('hotel')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M3 21V8l9-5 9 5v13M3 21h18M9 21v-6h6v6M7 11h.01M7 8h.01"/></svg>
+            <span>Hotel</span>
+          </div>
+          <div class="template-option" onclick="addJournalPage('lounge')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M6 10h12M8 10c0 5 8 5 8 0M5 10h14l-1 3H6zM9 20h6"/></svg>
+            <span>Lounge</span>
+          </div>
+          <div class="template-option" onclick="addJournalPage('general')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="4" y="3" width="16" height="18" rx="1"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+            <span>General</span>
+          </div>
+        </div>
       </div>
 
       <div class="form-actions">
-        <span></span>
-        <button class="btn btn-solid" id="btn-continue-step1" onclick="createTravelCard()">Save journey →</button>
+        <button class="btn btn-ghost" id="btn-page-prev" onclick="goToPrevPage()" style="visibility:hidden;">← Previous</button>
+        <div style="display:flex; gap:14px;">
+          <button class="btn btn-ghost" id="btn-page-next" onclick="goToNextPage()" style="display:none;">Next →</button>
+          <button class="btn" onclick="toggleTemplatePicker()">+ Add page</button>
+          <button class="btn btn-solid" id="btn-continue-step1" onclick="exitJournal()">Exit</button>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- ============ CARD REVEAL ============ -->
   <!-- ============ CARD REVEAL ============ -->
   <section id="view-card-reveal" class="view">
     <div class="card-view-wrap">
@@ -1721,19 +1846,127 @@ function abbr(city){
 /* ============ CARD CREATION ============ */
 let viewingSaved = null;
 
+/* ============ JOURNAL PAGE NAVIGATOR ============ */
+// journalPages[0] is always the Journey Basics page (real form fields, kept
+// permanently in the DOM). Any pages after that are placeholders for a
+// chosen template (flight/hotel/lounge/general) — not persisted anywhere
+// yet, since those data entities don't exist as real capture forms yet.
+let journalPages = [{ type: 'basics', label: 'Journey Basics' }];
+let currentPageIndex = 0;
+
+const PAGE_TEMPLATES = {
+  flight: {
+    label: 'Flight',
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M2 16l7-1 4.5-8 2 .5-2 7.5 6-1 2 1.5-7 3-3 4-1.5-.5.5-3.5-6 1.5-.5-2z"/></svg>',
+    text: 'Flight details will live here once that page type is built — for now, this reserves its place in the journal.'
+  },
+  hotel: {
+    label: 'Hotel',
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M3 21V8l9-5 9 5v13M3 21h18M9 21v-6h6v6M7 11h.01M7 8h.01"/></svg>',
+    text: 'Hotel details will live here once that page type is built — for now, this reserves its place in the journal.'
+  },
+  lounge: {
+    label: 'Lounge',
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M6 10h12M8 10c0 5 8 5 8 0M5 10h14l-1 3H6zM9 20h6"/></svg>',
+    text: 'Lounge details will live here once that page type is built — for now, this reserves its place in the journal.'
+  },
+  general: {
+    label: 'General',
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="4" y="3" width="16" height="18" rx="1"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>',
+    text: 'A general note page — coming soon.'
+  }
+};
+
+function resetJournalPages(){
+  journalPages = [{ type: 'basics', label: 'Journey Basics' }];
+  currentPageIndex = 0;
+  document.getElementById('additional-pages').innerHTML = '';
+  document.getElementById('template-picker').style.display = 'none';
+  showPage(0);
+}
+
+function renderPageNavigator(){
+  const wrap = document.getElementById('page-navigator-inner');
+  wrap.innerHTML = '';
+  journalPages.forEach((p, idx) => {
+    const tab = document.createElement('div');
+    tab.className = 'page-tab' + (idx === currentPageIndex ? ' active' : '');
+    tab.onclick = () => showPage(idx);
+    tab.innerHTML = `<span class="page-num">${idx + 1}</span> ${p.label}`;
+    wrap.appendChild(tab);
+  });
+  const addBtn = document.createElement('div');
+  addBtn.className = 'page-tab-add';
+  addBtn.title = 'Add page';
+  addBtn.onclick = toggleTemplatePicker;
+  addBtn.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12h14"/></svg>';
+  wrap.appendChild(addBtn);
+}
+
+function showPage(idx){
+  currentPageIndex = idx;
+  document.querySelectorAll('.journal-page').forEach((el, i) => {
+    el.classList.toggle('active', i === idx);
+  });
+  document.getElementById('template-picker').style.display = 'none';
+  document.getElementById('btn-page-prev').style.visibility = idx === 0 ? 'hidden' : 'visible';
+  document.getElementById('btn-page-next').style.display = idx < journalPages.length - 1 ? 'inline-flex' : 'none';
+  renderPageNavigator();
+}
+
+function goToPrevPage(){
+  if (currentPageIndex > 0) showPage(currentPageIndex - 1);
+}
+function goToNextPage(){
+  if (currentPageIndex < journalPages.length - 1) showPage(currentPageIndex + 1);
+}
+
+function toggleTemplatePicker(){
+  const picker = document.getElementById('template-picker');
+  picker.style.display = picker.style.display === 'none' ? 'block' : 'none';
+}
+
+function addJournalPage(type){
+  const tpl = PAGE_TEMPLATES[type];
+  const idx = journalPages.length;
+  journalPages.push({ type, label: tpl.label });
+
+  const pageEl = document.createElement('div');
+  pageEl.className = 'journal-page';
+  pageEl.innerHTML = `
+    <div class="page-placeholder">
+      ${tpl.icon}
+      <h3>${tpl.label}</h3>
+      <p>${tpl.text}</p>
+    </div>
+  `;
+  document.getElementById('additional-pages').appendChild(pageEl);
+  document.getElementById('template-picker').style.display = 'none';
+  showPage(idx);
+}
+
+function exitJournal(){
+  createTravelCard();
+}
+
 // Called by every "+ New journey" entry point — makes sure we're not
 // accidentally carrying over the ID of a journey someone was just editing.
 function startNewJourney(){
   viewingSaved = null;
   resetForm();
+  resetJournalPages();
   goTo('view-trip-basics');
 }
 
 // Called by "Edit details" on an existing journey's card — fills the Trip
 // Basics form with that journey's actual data. Without this, the form was
 // simply blank because navigating to it never read anything back in.
+// Only resets the page navigator when loading a *different, previously
+// saved* journey — going back to edit a journey you're still actively
+// creating should never wipe out pages you just added.
 function editJourneyDetails(){
   if (viewingSaved !== null) {
+    resetJournalPages();
     populateTripBasicsForm(state.journeys[viewingSaved]);
   }
   goTo('view-trip-basics');
